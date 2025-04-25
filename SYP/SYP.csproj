@@ -8,4 +8,22 @@
     <UseWPF>true</UseWPF>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Remove="Fonts\Montserrat-VariableFont_wght.ttf" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Context\DB\" />
+    <Folder Include="Models\" />
+    <Folder Include="Pages\Elements\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FontAwesome.WPF" Version="4.7.0.9" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Fonts\Montserrat-VariableFont_wght.ttf" />
+  </ItemGroup>
+
 </Project>

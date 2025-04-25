@@ -5,8 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SYP"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="Система управления персоналом" Height="650" Width="1000" MinHeight="550" MinWidth="900" WindowStartupLocation="CenterScreen">
     <Grid>
-
+        <Frame x:Name="frame" NavigationUIVisibility="Hidden"/>
     </Grid>
 </Window>
