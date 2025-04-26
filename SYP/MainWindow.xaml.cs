@@ -18,6 +18,7 @@ namespace SYP
     public partial class MainWindow : Window
     {
         public static MainWindow mw;
+
         public MainWindow()
         {
             InitializeComponent();

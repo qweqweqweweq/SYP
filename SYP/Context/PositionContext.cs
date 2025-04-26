@@ -12,14 +12,14 @@ namespace SYP.Context
     public class PositionContext : DbContext
     {
         public DbSet<Positions> Positions { get; set; }
-        public PositionContext()
-        {
-            Database.EnsureCreated();
-            Positions.Load();
-        }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseMySql(Config.connection, Config.version);
+        }
+
+        public void MigrateDatabase()
+        {
+            Database.Migrate();
         }
     }
 }

@@ -12,14 +12,14 @@ namespace SYP.Context
     public class VacationContext : DbContext
     {
         public DbSet<Vacations> Vacations { get; set; }
-        public VacationContext()
-        {
-            Database.EnsureCreated();
-            Vacations.Load();
-        }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseMySql(Config.connection, Config.version);
+        }
+
+        public void MigrateDatabase()
+        {
+            Database.Migrate();
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SYP.Context;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,9 +21,15 @@ namespace SYP.Pages
     /// </summary>
     public partial class Employees : Page
     {
+        public EmployeeContext EmployeeContext = new();
+
         public Employees()
         {
             InitializeComponent();
+
+            showEmployees.Children.Clear();
+            foreach (Models.Employees item in EmployeeContext.Employees)
+                showEmployees.Children.Add(new Elements.EmployeeItem(this, item));
         }
 
         private void OpenMain(object sender, MouseButtonEventArgs e)
@@ -58,6 +65,16 @@ namespace SYP.Pages
         private void Logout(object sender, MouseButtonEventArgs e)
         {
             MainWindow.mw.OpenPages(new Pages.Authorization());
+        }
+
+        private void KeyDownSearch(object sender, KeyEventArgs e)
+        {
+
+        }
+
+        private void SelectedStatus(object sender, SelectionChangedEventArgs e)
+        {
+
         }
     }
 }

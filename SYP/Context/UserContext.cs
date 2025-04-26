@@ -12,14 +12,14 @@ namespace SYP.Context
     public class UserContext : DbContext
     {
         public DbSet<Users> Users { get; set; }
-        public UserContext()
-        {
-            Database.EnsureCreated();
-            Users.Load();
-        }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseMySql(Config.connection, Config.version);
+        }
+
+        public void MigrateDatabase()
+        {
+            Database.Migrate();
         }
     }
 }
