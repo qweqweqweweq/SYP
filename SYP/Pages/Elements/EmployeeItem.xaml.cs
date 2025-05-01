@@ -40,15 +40,15 @@ namespace SYP.Pages.Elements
 
             if (Employee.Status == "Активен")
             {
-                lbStatus.Foreground = (Brush)new BrushConverter().ConvertFrom("#239417");
+                lbStatus.Foreground = new BrushConverter().ConvertFrom("#BF9115") as Brush;
             }
             else if (Employee.Status == "В отпуске")
             {
-                lbStatus.Foreground = (Brush)new BrushConverter().ConvertFrom("#BF9115");
+                lbStatus.Foreground = new BrushConverter().ConvertFrom("#BF9115") as Brush;
             }
             else if (Employee.Status == "Уволен")
             {
-                lbStatus.Foreground = (Brush)new BrushConverter().ConvertFrom("#A31717");
+                lbStatus.Foreground = new BrushConverter().ConvertFrom("#BF9115") as Brush;
             }
         }
 
