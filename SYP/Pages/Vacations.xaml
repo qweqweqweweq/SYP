@@ -80,5 +80,15 @@
                 </Label>
             </Grid>
         </Border>
+        <Border Margin="10" CornerRadius="10" Grid.Column="1">
+            <Grid>
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Top" Margin="0,10,0,0" HorizontalAlignment="Center">
+                    <TextBox KeyDown="KeyDownSearch" Width="320" Height="30" FontSize="15" Margin="0,0,10,0" Style="{StaticResource RoundedTextBox}"/>
+                </StackPanel>
+                <ScrollViewer Margin="0,50,0,0" VerticalScrollBarVisibility="Hidden" Style="{StaticResource RoundedBorderScrollViewerStyle}">
+                    <StackPanel x:Name="showVacations"/>
+                </ScrollViewer>
+            </Grid>
+        </Border>
     </Grid>
 </Page>

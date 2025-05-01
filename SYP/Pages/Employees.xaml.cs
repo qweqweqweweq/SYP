@@ -21,7 +21,8 @@ namespace SYP.Pages
     /// </summary>
     public partial class Employees : Page
     {
-        public EmployeeContext EmployeeContext = new();
+        public EmployeeContext EmployeeContext = new EmployeeContext();
+        public StatusContext StatusContext = new StatusContext();
 
         public Employees()
         {
@@ -30,6 +31,8 @@ namespace SYP.Pages
             showEmployees.Children.Clear();
             foreach (Models.Employees item in EmployeeContext.Employees)
                 showEmployees.Children.Add(new Elements.EmployeeItem(this, item));
+
+            foreach (var item in StatusContext.Status) Status.Items.Add(item.Name);
         }
 
         private void OpenMain(object sender, MouseButtonEventArgs e)
@@ -74,7 +77,7 @@ namespace SYP.Pages
 
         private void SelectedStatus(object sender, SelectionChangedEventArgs e)
         {
-
+            
         }
     }
 }

@@ -25,6 +25,7 @@ namespace SYP.Pages.Elements
         Models.Employees Employee;
         PositionContext positionContext = new PositionContext();
         DepartmentContext departmentContext = new DepartmentContext();
+        StatusContext statusContext = new StatusContext();
 
         public EmployeeItem(Employees MainEmployees, Models.Employees Employee)
         {
@@ -36,19 +37,21 @@ namespace SYP.Pages.Elements
             lbFIO.Content = Employee.LastName + " " + Employee.FirstName + " " + Employee.Patronymic;
             lbPosition.Content = "Должность: " + positionContext.Positions.Where(x => x.Id == Employee.PositionId).FirstOrDefault().Name;
             lbDepartment.Content = "Отдел: " + departmentContext.Departments.Where(x => x.Id == Employee.DepartmentId).FirstOrDefault().Name;
-            lbStatus.Content = Employee.Status;
 
-            if (Employee.Status == "Активен")
+            var status = statusContext.Status.FirstOrDefault(x => x.Id == Employee.StatusId);
+            lbStatus.Content = status.Name;
+
+            if (status.Name == "Активен")
             {
-                lbStatus.Foreground = new BrushConverter().ConvertFrom("#BF9115") as Brush;
+                lbStatus.Foreground = new BrushConverter().ConvertFrom("#258117") as Brush;
             }
-            else if (Employee.Status == "В отпуске")
+            else if (status.Name == "В отпуске")
             {
-                lbStatus.Foreground = new BrushConverter().ConvertFrom("#BF9115") as Brush;
+                lbStatus.Foreground = new BrushConverter().ConvertFrom("#fc7e01") as Brush;
             }
-            else if (Employee.Status == "Уволен")
+            else if (status.Name == "Уволен")
             {
-                lbStatus.Foreground = new BrushConverter().ConvertFrom("#BF9115") as Brush;
+                lbStatus.Foreground = new BrushConverter().ConvertFrom("#ac2517") as Brush;
             }
         }
 
