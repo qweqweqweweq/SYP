@@ -14,91 +14,119 @@
             <ColumnDefinition Width="200"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
-        <Border Background="White" Margin="10" CornerRadius="10">
+        <Border Background="White" Margin="10" CornerRadius="10" Effect="{DynamicResource ShadowEffect}">
             <Grid>
                 <Label Height="40" FontSize="20" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="15,10,0,0" FontFamily="/Fonts/#Montserrat Bold">
                     <StackPanel Orientation="Horizontal">
                         <fa:ImageAwesome Icon="UserCircleOutline" Width="20" Height="20" Margin="0,0,5,0" Foreground="#FF728EBB"/>
-                        <TextBlock Text="СотрудниК"/>
+                        <TextBlock Text="СотрудниК" Foreground="#202a45"/>
                     </StackPanel>
                 </Label>
 
                 <Label Style="{StaticResource LabelWithIconStyle}" Height="30" FontSize="15" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="20,90,0,0">
                     <StackPanel Orientation="Horizontal">
                         <fa:ImageAwesome Icon="Home" Width="16" Height="16" Margin="0,0,5,0" Foreground="#FF728EBB"/>
-                        <TextBlock Text="Главная"/>
+                        <TextBlock Text="Главная" Foreground="#202a45"/>
                     </StackPanel>
                 </Label>
 
                 <Label MouseDown="OpenEmployees" Style="{StaticResource HoverLabelStyle}" Height="30" FontSize="15" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="20,125,0,0">
                     <StackPanel Orientation="Horizontal">
                         <fa:ImageAwesome Icon="Users" Width="16" Height="16" Margin="0,0,5,0" Foreground="#FF728EBB"/>
-                        <TextBlock Text="Сотрудники"/>
+                        <TextBlock Text="Сотрудники" Foreground="#202a45"/>
                     </StackPanel>
                 </Label>
 
                 <Label MouseDown="OpenDepartments" Style="{StaticResource HoverLabelStyle}" Height="30" FontSize="15" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="20,160,0,0">
                     <StackPanel Orientation="Horizontal">
                         <fa:ImageAwesome Icon="Building" Width="16" Height="16" Margin="0,0,5,0" Foreground="#FF728EBB"/>
-                        <TextBlock Text="Отделы"/>
+                        <TextBlock Text="Отделы" Foreground="#202a45"/>
                     </StackPanel>
                 </Label>
 
                 <Label MouseDown="OpenPositions" Style="{StaticResource HoverLabelStyle}" Height="30" FontSize="15" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="20,195,0,0">
                     <StackPanel Orientation="Horizontal">
                         <fa:ImageAwesome Icon="Briefcase" Width="16" Height="16" Margin="0,0,5,0" Foreground="#FF728EBB"/>
-                        <TextBlock Text="Должности"/>
+                        <TextBlock Text="Должности" Foreground="#202a45"/>
                     </StackPanel>
                 </Label>
 
                 <Label MouseDown="OpenVacations" Style="{StaticResource HoverLabelStyle}" Height="30" FontSize="15" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="20,230,0,0">
                     <StackPanel Orientation="Horizontal">
                         <fa:ImageAwesome Icon="Calendar" Width="16" Height="16" Margin="0,0,5,0" Foreground="#FF728EBB"/>
-                        <TextBlock Text="Отпуска"/>
+                        <TextBlock Text="Отпуска" Foreground="#202a45"/>
                     </StackPanel>
                 </Label>
 
                 <Label MouseDown="OpenReports" Style="{StaticResource HoverLabelStyle}" Height="30" FontSize="15" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="20,265,0,0">
                     <StackPanel Orientation="Horizontal">
                         <fa:ImageAwesome Icon="FileText" Width="16" Height="16" Margin="0,0,5,0" Foreground="#FF728EBB"/>
-                        <TextBlock Text="Отчёты"/>
+                        <TextBlock Text="Отчёты" Foreground="#202a45"/>
                     </StackPanel>
                 </Label>
 
                 <Label MouseDown="OpenSettings" Style="{StaticResource HoverLabelStyle}" Height="30" FontSize="15" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="20,0,0,45">
                     <StackPanel Orientation="Horizontal">
                         <fa:ImageAwesome Icon="Cog" Width="16" Height="16" Margin="0,0,5,0" Foreground="#FF728EBB"/>
-                        <TextBlock Text="Настройки"/>
+                        <TextBlock Text="Настройки" Foreground="#202a45"/>
                     </StackPanel>
                 </Label>
 
                 <Label MouseDown="Logout" Style="{StaticResource HoverLabelStyle}" Height="30" FontSize="15" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="20,0,0,10">
                     <StackPanel Orientation="Horizontal">
                         <fa:ImageAwesome Icon="SignOut" Width="16" Height="16" Margin="0,0,5,0" Foreground="#FF728EBB"/>
-                        <TextBlock Text="Выход"/>
+                        <TextBlock Text="Выход" Foreground="#202a45"/>
                     </StackPanel>
                 </Label>
             </Grid>
         </Border>
-        <Border Margin="10" CornerRadius="10" Grid.Column="1">
+        <ScrollViewer Margin="10" Grid.Column="1" VerticalScrollBarVisibility="Hidden">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="230"/>
+                    <ColumnDefinition Width="250"/>
                 </Grid.ColumnDefinitions>
-                <Label x:Name="lbWelcome" Content="Добро пожаловать, Пользователь!" Height="40" FontSize="18" VerticalAlignment="Top" Margin="0,10,0,0" FontFamily="/Fonts/#Montserrat Medium"/>
-                <Border CornerRadius="10" VerticalAlignment="Top" Background="White" Margin="0,50,10,0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" MinHeight="257"/>
+                    <RowDefinition Height="Auto" MinHeight="153"/>
+                </Grid.RowDefinitions>
+                <Label x:Name="lbWelcome" Content="Добро пожаловать, Пользователь!" Height="40" FontSize="18" VerticalAlignment="Top" Foreground="#202a45" Margin="0,10,0,0" FontFamily="/Fonts/#Montserrat Bold"/>
+                <Border CornerRadius="10" VerticalAlignment="Top" Background="White" Margin="0,50,10,0" Height="140" Effect="{DynamicResource ShadowEffect}">
                     <Grid>
-                        <Label x:Name="CountEmployees" Content="Всего сотрудников: 105" Height="30" FontSize="15" VerticalAlignment="Top" Margin="10,10,10,0"/>
-                        <Label x:Name="CountDepartments" Content="Всего отделов: 8" Height="30" FontSize="15" VerticalAlignment="Top" Margin="10,40,10,0"/>
-                        <Label x:Name="CountFreePositions" Content="Свободные должности: 2" Height="30" FontSize="15" VerticalAlignment="Top" Margin="10,70,10,0"/>
-                        <Label x:Name="CountVacation" Content="В отпуске сейчас: 12 сотрудников" Height="30" FontSize="15" VerticalAlignment="Top" Margin="10,100,10,10"/>
+                        <Label x:Name="CountEmployees" Content="Всего сотрудников: 105" Height="30" FontSize="15" VerticalAlignment="Top" Margin="10,10,10,0" Foreground="#202a45"/>
+                        <Label x:Name="CountDepartments" Content="Всего отделов: 8" Height="30" FontSize="15" VerticalAlignment="Top" Margin="10,40,10,0" Foreground="#202a45"/>
+                        <Label x:Name="CountFreePositions" Content="Свободные должности: 2" Height="30" FontSize="15" VerticalAlignment="Top" Margin="10,70,10,0" Foreground="#202a45"/>
+                        <Label x:Name="CountVacation" Content="В отпуске сейчас: 12 сотрудников" Height="30" FontSize="15" VerticalAlignment="Top" Margin="10,100,10,10" Foreground="#202a45"/>
                     </Grid>
                 </Border>
-                <Viewbox Stretch="Uniform" Margin="10" VerticalAlignment="Top" Grid.Column="1">
+                <Viewbox Stretch="Uniform" VerticalAlignment="Center" Grid.Column="1" Effect="{DynamicResource ShadowEffect}" Margin="10">
                     <Calendar Style="{StaticResource RoundedCalendarStyle}"/>
                 </Viewbox>
+                <Border Grid.Column="1" Grid.Row="1" Background="White" CornerRadius="10" Padding="10" VerticalAlignment="Top" Margin="10,10,10,0" Effect="{DynamicResource ShadowEffect}">
+                    <StackPanel Orientation="Horizontal" x:Name="WeatherPanel" VerticalAlignment="Center">
+                        <StackPanel>
+                            <TextBlock x:Name="WeatherTemp" FontWeight="Bold" FontSize="14" Foreground="#202a45" Margin="0,0,0,5"/>
+                            <TextBlock x:Name="WeatherDesc" FontSize="12" Foreground="#606060"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+                <Border Background="White" CornerRadius="10" Grid.RowSpan="2" Margin="0,210,10,0" Padding="10" VerticalAlignment="Top" Effect="{DynamicResource ShadowEffect}">
+                    <StackPanel>
+                        <TextBlock Text="Ближайшие праздники" FontWeight="Bold" FontSize="16" Foreground="#202a45" Margin="0,0,0,5" Padding="5"/>
+                        <ItemsControl x:Name="HolidayList" Padding="5">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal" Margin="0,2">
+                                        <TextBlock Text="{Binding Name}" FontSize="14" Foreground="#606060"/>
+                                        <TextBlock Text=" — " FontSize="14" Foreground="#606060"/>
+                                        <TextBlock Text="{Binding Date, StringFormat='{}{0:dd.MM.yyyy}'}" FontSize="14" Foreground="#606060"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </Border>
             </Grid>
-        </Border>
+        </ScrollViewer>
     </Grid>
 </Page>

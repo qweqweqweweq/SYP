@@ -30,9 +30,9 @@
             </TextBlock>
         </Label>
         <Image Source="/Images/human-working.png" VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="10,0,10,20"/>
-        <Border Background="White" CornerRadius="10" Grid.Column="1" Margin="10">
+        <Border Background="White" CornerRadius="10" Grid.Column="1" Margin="10" Effect="{DynamicResource ShadowEffect}">
             <Grid VerticalAlignment="Center">
-                <Label Content="С возвращением!" Height="35" FontSize="23" VerticalAlignment="Top" HorizontalAlignment="Center" FontFamily="/Fonts/#Montserrat Medium"/>
+                <Label Content="С возвращением!" Height="35" FontSize="23" VerticalAlignment="Top" HorizontalAlignment="Center" FontFamily="/Fonts/#Montserrat Bold" Foreground="#202a45"/>
                 <Label Content="Имя пользователя:" Height="30" FontSize="15" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="20,80,0,0"/>
                 <TextBox x:Name="UserName" Height="30" FontSize="15" VerticalAlignment="Top" Margin="20,110,20,0" Style="{StaticResource RoundedTextBox2}"/>
                 <Label Content="Пароль:" Height="30" FontSize="15" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="20,150,0,0"/>

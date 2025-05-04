@@ -1,20 +1,20 @@
-﻿<Page x:Class="SYP.Pages.Settings"
+﻿<Page x:Class="SYP.Pages.Employees.Employees"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-      xmlns:local="clr-namespace:SYP.Pages"
+      xmlns:local="clr-namespace:SYP.Pages.Employees"
       xmlns:fa="http://schemas.fontawesome.io/icons/"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
-      Title="Settings" FontFamily="/Fonts/#Montserrat">
+      Title="Employees" FontFamily="/Fonts/#Montserrat">
 
     <Grid Background="#FFDCE4F1">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="200"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
-        <Border Background="White" Margin="10" CornerRadius="10">
+        <Border Background="White" Margin="10" CornerRadius="10" Effect="{DynamicResource ShadowEffect}">
             <Grid>
                 <Label Height="40" FontSize="20" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="15,10,0,0" FontFamily="/Fonts/#Montserrat Bold">
                     <StackPanel Orientation="Horizontal">
@@ -30,7 +30,7 @@
                     </StackPanel>
                 </Label>
 
-                <Label MouseDown="OpenEmployees" Style="{StaticResource HoverLabelStyle}" Height="30" FontSize="15" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="20,125,0,0">
+                <Label Style="{StaticResource LabelWithIconStyle}" Height="30" FontSize="15" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="20,125,0,0">
                     <StackPanel Orientation="Horizontal">
                         <fa:ImageAwesome Icon="Users" Width="16" Height="16" Margin="0,0,5,0" Foreground="#FF728EBB"/>
                         <TextBlock Text="Сотрудники"/>
@@ -65,14 +65,14 @@
                     </StackPanel>
                 </Label>
 
-                <Label Style="{StaticResource LabelWithIconStyle}" Height="30" FontSize="15" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="20,0,0,45">
+                <Label MouseDown="OpenSettings" Style="{StaticResource HoverLabelStyle}" Height="30" FontSize="15" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="20,0,0,45">
                     <StackPanel Orientation="Horizontal">
                         <fa:ImageAwesome Icon="Cog" Width="16" Height="16" Margin="0,0,5,0" Foreground="#FF728EBB"/>
                         <TextBlock Text="Настройки"/>
                     </StackPanel>
                 </Label>
 
-                <Label MouseDown="Logout" Style="{StaticResource HoverLabelStyle}" Height="30" FontSize="15" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="20,0,0,10" Cursor="Hand">
+                <Label MouseDown="Logout" Style="{StaticResource HoverLabelStyle}" Height="30" FontSize="15" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="20,0,0,10">
                     <StackPanel Orientation="Horizontal">
                         <fa:ImageAwesome Icon="SignOut" Width="16" Height="16" Margin="0,0,5,0" Foreground="#FF728EBB"/>
                         <TextBlock Text="Выход"/>
@@ -81,15 +81,18 @@
             </Grid>
         </Border>
         <Border Margin="10" CornerRadius="10" Grid.Column="1">
-            <Border BorderBrush="White" BorderThickness="2" CornerRadius="10">
-                <Grid>
-                    <Label Content="Изменение данных" Height="30" FontSize="18" VerticalAlignment="Top" HorizontalAlignment="Center" Margin="10"/>
-                    <Label Content="Имя пользователя:" Height="30" FontSize="15" VerticalAlignment="Top" Margin="20,70,20,0"/>
-                    <TextBox x:Name="UserName" Height="30" FontSize="15" VerticalAlignment="Top" Margin="20,100,20,0"/>
-                    <Label Content="Пароль:" Height="30" FontSize="15" VerticalAlignment="Top" Margin="20,140,20,0"/>
-                    <TextBox x:Name="PasswordText" Height="30" FontSize="15" VerticalAlignment="Top" Margin="20,170,20,0"/>
-                </Grid>
-            </Border>
+            <Grid>
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Top" Margin="0,10,0,0" HorizontalAlignment="Center">
+                    <TextBox KeyDown="KeyDownSearch" Width="320" Height="30" FontSize="15" Margin="0,0,10,0" Style="{StaticResource RoundedTextBox}" VerticalContentAlignment="Center" Effect="{DynamicResource ShadowEffect}"/>
+                    <ComboBox x:Name="Status" SelectionChanged="SelectedStatus" FontSize="14" Width="160" Style="{StaticResource ComboBoxStyleEdited}" VerticalContentAlignment="Center">
+                        <ComboBoxItem IsEnabled="False" IsSelected="True">Выберите статус</ComboBoxItem>
+                    </ComboBox>
+                </StackPanel>
+                <ScrollViewer Margin="0,50,0,40" VerticalScrollBarVisibility="Hidden" Style="{StaticResource RoundedBorderScrollViewerStyle}">
+                    <StackPanel x:Name="showEmployees"/>
+                </ScrollViewer>
+                <Button x:Name="add" Click="AddEmployee" Content="Добавить" Height="30" FontSize="15" Width="100" VerticalAlignment="Bottom" HorizontalAlignment="Right" Style="{StaticResource EditButtonStyle}"/>
+            </Grid>
         </Border>
     </Grid>
 </Page>

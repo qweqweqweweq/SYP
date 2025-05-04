@@ -1,18 +1,9 @@
 ﻿using SYP.Context;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+using SYP.Models.Holiday;
+using SYP.Models.Weather;
+using System.Globalization;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace SYP.Pages
 {
@@ -30,6 +21,9 @@ namespace SYP.Pages
         {
             InitializeComponent();
 
+            LoadWeather();
+            LoadHolidays();
+
             CountDepartments.Content = "Всего отделов: " + DepartmentContext.Departments.Count();
             CountEmployees.Content = "Всего сотрудников: " + EmployeeContext.Employees.Count();
 
@@ -39,6 +33,7 @@ namespace SYP.Pages
 
             CountFreePositions.Content = "Свободные должности: " + freePositions;
             CountVacation.Content = "В отпуске сейчас: " + VacationContext.Vacations.Count() + $" {GetEmployeeText(VacationContext.Vacations.Count())}";
+
         }
 
         private string GetEmployeeText(int count)
@@ -51,9 +46,42 @@ namespace SYP.Pages
                 return "сотрудников";
         }
 
+        private async void LoadWeather()
+        {
+            try
+            {
+                var weather = await WeatherService.GetWeatherAsync();
+
+                WeatherTemp.Text = $"{weather.main.temp}°C, {weather.name}";
+                WeatherDesc.Text = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(weather.weather[0].description);
+            }
+            catch
+            {
+                WeatherTemp.Text = "Ошибка загрузки";
+                WeatherDesc.Text = "";
+            }
+        }
+
+        private async void LoadHolidays()
+        {
+            try
+            {
+                var holidays = await HolidayService.GetUpcomingHolidaysAsync();
+                HolidayList.ItemsSource = holidays;
+            }
+            catch
+            {
+                HolidayList.ItemsSource = new List<Holiday>
+                {
+                    new Holiday { Name = "Ошибка загрузки", Date = DateTime.Now }
+                };
+            }
+        }
+
+
         private void OpenEmployees(object sender, MouseButtonEventArgs e)
         {
-            MainWindow.mw.OpenPages(new Pages.Employees());
+            MainWindow.mw.OpenPages(new Pages.Employees.Employees());
         }
 
         private void OpenDepartments(object sender, MouseButtonEventArgs e)

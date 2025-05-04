@@ -32,7 +32,7 @@ namespace SYP.Pages
 
         private void OpenEmployees(object sender, MouseButtonEventArgs e)
         {
-            MainWindow.mw.OpenPages(new Pages.Employees());
+            MainWindow.mw.OpenPages(new Pages.Employees.Employees());
         }
 
         private void OpenDepartments(object sender, MouseButtonEventArgs e)

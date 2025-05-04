@@ -14,7 +14,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace SYP.Pages.Elements
+namespace SYP.Pages.Employees
 {
     /// <summary>
     /// Логика взаимодействия для EmployeeItem.xaml
@@ -57,12 +57,12 @@ namespace SYP.Pages.Elements
 
         private void ViewClick(object sender, MouseButtonEventArgs e)
         {
-
+            MainWindow.mw.OpenPages(new Pages.Employees.Profile(MainEmployees, Employee));
         }
 
         private void EditClick(object sender, MouseButtonEventArgs e)
         {
-
+            MainWindow.mw.OpenPages(new Pages.Employees.EmployeeEdit(MainEmployees, Employee));
         }
 
         private void DeleteClick(object sender, MouseButtonEventArgs e)
