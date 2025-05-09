@@ -10,17 +10,25 @@ namespace SYP
     public partial class MainWindow : Window
     {
         public static MainWindow mw;
+        public Models.Users CurrentUser { get; private set; }
 
-        public MainWindow()
+        public MainWindow() : this("Default") { }
+
+        public MainWindow(string role)
         {
             InitializeComponent();
             mw = this;
-            OpenPages(new Pages.Main());
+            OpenPages(new Pages.Authorization());
         }
 
         public void OpenPages(Page page)
         {
             frame.Navigate(page);
+        }
+
+        public void SetCurrentUser(Models.Users user)
+        {
+            CurrentUser = user;
         }
 
         private void Minimize_Click(object sender, MouseButtonEventArgs e)

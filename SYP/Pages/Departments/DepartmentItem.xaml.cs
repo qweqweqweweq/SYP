@@ -13,7 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace SYP.Pages.Elements
+namespace SYP.Pages.Departments
 {
     /// <summary>
     /// Логика взаимодействия для DepartmentItem.xaml
@@ -22,6 +22,7 @@ namespace SYP.Pages.Elements
     {
         Departments MainDepartments;
         Models.Departments Department;
+        private Models.Users currentUser;
 
         public DepartmentItem(Departments MainDepartments, Models.Departments Department)
         {
@@ -30,12 +31,19 @@ namespace SYP.Pages.Elements
             this.MainDepartments = MainDepartments;
             this.Department = Department;
 
+            currentUser = MainWindow.mw.CurrentUser;
+            if (currentUser != null && currentUser.Role == "Admin")
+            {
+                Edit.Visibility = Visibility.Visible;
+                Delete.Visibility = Visibility.Visible;
+            }
+
             lbName.Content = Department.Name;
         }
 
         private void EditClick(object sender, MouseButtonEventArgs e)
         {
-
+            MainWindow.mw.OpenPages(new Pages.Departments.DepartmentEdit(MainDepartments, Department));
         }
 
         private void DeleteClick(object sender, MouseButtonEventArgs e)

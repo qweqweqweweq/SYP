@@ -7,13 +7,10 @@ using System.Threading.Tasks;
 
 namespace SYP.Models
 {
-    public class Vacations
+    public class VacationTypes
     {
         [Key]
         public int Id { get; set; }
-        public int EmployeeId {  get; set; }
-        public DateTime StartDate {  get; set; }
-        public DateTime EndDate { get; set; }
-        public int TypeId {  get; set; }
+        public string Name { get; set; }
     }
 }

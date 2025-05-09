@@ -14,7 +14,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace SYP.Pages
+namespace SYP.Pages.Departments
 {
     /// <summary>
     /// Логика взаимодействия для Departments.xaml
@@ -22,14 +22,21 @@ namespace SYP.Pages
     public partial class Departments : Page
     {
         public DepartmentContext DepartmentContext = new DepartmentContext();
+        private Models.Users currentUser;
 
         public Departments()
         {
             InitializeComponent();
 
+            currentUser = MainWindow.mw.CurrentUser;
+            if (currentUser != null && currentUser.Role == "Admin")
+            {
+                add.Visibility = Visibility.Visible;
+            }
+
             showDepartments.Children.Clear();
             foreach (Models.Departments item in DepartmentContext.Departments)
-                showDepartments.Children.Add(new Elements.DepartmentItem(this, item));
+                showDepartments.Children.Add(new Pages.Departments.DepartmentItem(this, item));
         }
 
         private void OpenMain(object sender, MouseButtonEventArgs e)
@@ -44,12 +51,12 @@ namespace SYP.Pages
 
         private void OpenPositions(object sender, MouseButtonEventArgs e)
         {
-            MainWindow.mw.OpenPages(new Pages.Positions());
+            MainWindow.mw.OpenPages(new Pages.Positions.Positions());
         }
 
         private void OpenVacations(object sender, MouseButtonEventArgs e)
         {
-            MainWindow.mw.OpenPages(new Pages.Vacations());
+            MainWindow.mw.OpenPages(new Pages.Vacations.Vacations());
         }
 
         private void OpenReports(object sender, MouseButtonEventArgs e)
@@ -70,6 +77,22 @@ namespace SYP.Pages
         private void KeyDownSearch(object sender, KeyEventArgs e)
         {
 
+        }
+
+        private void AddDepartment(object sender, RoutedEventArgs e)
+        {
+            MainWindow.mw.OpenPages(new Pages.Departments.DepartmentEdit(this, null));
+        }
+
+        private void SearchDepartment(object sender, TextChangedEventArgs e)
+        {
+            string searchText = search.Text.ToLower();
+            var result = DepartmentContext.Departments.Where(x => x.Name.ToLower().Contains(searchText));
+            showDepartments.Children.Clear();
+            foreach (var item in result)
+            {
+                showDepartments.Children.Add(new DepartmentItem(this, item));
+            }
         }
     }
 }

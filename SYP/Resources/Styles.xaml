@@ -1,11 +1,20 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:sys="clr-namespace:System;assembly=mscorlib"
+                    xmlns:local="clr-namespace:SYP.Models.Calendar"
     xmlns:theme="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero2">
+
+    <local:DayOfWeekBrush x:Key="WeekendBrushConverter"
+                      WeekendBrush="#f6d6d6 "
+                      DefaultBrush="Transparent"/>
 
 
     <Style x:Key="CustomCalendarDayButtonStyle" TargetType="CalendarDayButton">
-        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Background">
+            <Setter.Value>
+                <Binding Path="." Converter="{StaticResource WeekendBrushConverter}"/>
+            </Setter.Value>
+        </Setter>
         <Setter Property="BorderBrush" Value="Transparent"/>
         <Setter Property="BorderThickness" Value="1"/>
         <Setter Property="Template">
@@ -16,7 +25,9 @@
                         BorderBrush="{TemplateBinding BorderBrush}"
                         BorderThickness="{TemplateBinding BorderThickness}"
                         CornerRadius="5"
-                        Padding="5"
+                        Padding="3"
+                        Margin="1"
+                        Width="25"
                         HorizontalAlignment="Center"
                         VerticalAlignment="Center">
                         <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
@@ -688,6 +699,36 @@
         </Setter>
     </Style>
 
+    <Style x:Key="HoverLabelStyleText" TargetType="Label">
+        <Style.Setters>
+            <Setter Property="Foreground" Value="#FF728EBB"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style.Setters>
+        <Style.Triggers>
+            <EventTrigger RoutedEvent="UIElement.MouseEnter">
+                <BeginStoryboard>
+                    <Storyboard>
+                        <ColorAnimation 
+                                Storyboard.TargetProperty="(Label.Foreground).(SolidColorBrush.Color)"
+                                To="#202a45"
+                                Duration="0:0:0.2" />
+                    </Storyboard>
+                </BeginStoryboard>
+            </EventTrigger>
+
+            <EventTrigger RoutedEvent="UIElement.MouseLeave">
+                <BeginStoryboard>
+                    <Storyboard>
+                        <ColorAnimation 
+                                Storyboard.TargetProperty="(Label.Foreground).(SolidColorBrush.Color)"
+                                To="#FF728EBB"
+                                Duration="0:0:0.2" />
+                    </Storyboard>
+                </BeginStoryboard>
+            </EventTrigger>
+        </Style.Triggers>
+    </Style>
+
     <Style x:Key="RoundedBorderScrollViewerStyle" TargetType="ScrollViewer">
         <Setter Property="Template">
             <Setter.Value>
@@ -773,16 +814,35 @@
                     CornerRadius="10">
                         <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                     </Border>
+                    <ControlTemplate.Triggers>
+                        <EventTrigger RoutedEvent="Button.MouseEnter">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <ColorAnimation Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                                To="#FF728EBB"
+                                                Duration="0:0:0.2"/>
+                                    <ColorAnimation Storyboard.TargetProperty="(Button.Foreground).(SolidColorBrush.Color)"
+                                                To="White"
+                                                Duration="0:0:0.2"/>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                        <EventTrigger RoutedEvent="Button.MouseLeave">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <ColorAnimation Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                                To="#FFDCE4F1"
+                                                Duration="0:0:0.2"/>
+                                    <ColorAnimation Storyboard.TargetProperty="(Button.Foreground).(SolidColorBrush.Color)"
+                                                To="Black"
+                                                Duration="0:0:0.2"/>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                    </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
-        <Style.Triggers>
-            <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="Background" Value="#FF728EBB"/>
-                <Setter Property="BorderBrush" Value="Transparent"/>
-                <Setter Property="Foreground" Value="White"/>
-            </Trigger>
-        </Style.Triggers>
     </Style>
 
     <Style x:Key="RoundedTextBoxEdit" TargetType="TextBox">
@@ -812,6 +872,7 @@
         <Setter Property="BorderBrush" Value="#FF728EBB"/>
         <Setter Property="HorizontalAlignment" Value="Right"/>
         <Setter Property="VerticalAlignment" Value="Bottom"/>
+        <Setter Property="Cursor" Value="Hand"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="Button">
@@ -863,6 +924,7 @@
         <Setter Property="BorderBrush" Value="#FF436396"/>
         <Setter Property="HorizontalAlignment" Value="Right"/>
         <Setter Property="VerticalAlignment" Value="Bottom"/>
+        <Setter Property="Cursor" Value="Hand"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="Button">

@@ -17,7 +17,7 @@
         <Label Height="30" FontSize="15" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10" FontFamily="/Fonts/#Montserrat Bold">
             <StackPanel Orientation="Horizontal">
                 <fa:ImageAwesome Icon="UserCircleOutline" Width="17" Height="17" Margin="0,0,5,0" Foreground="#FF728EBB"/>
-                <TextBlock Text="СотрудниК"/>
+                <TextBlock Text="СотрудниК" Foreground="#202a45"/>
             </StackPanel>
         </Label>
         <Label VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10,70,0,0">
@@ -37,7 +37,8 @@
                 <TextBox x:Name="UserName" Height="30" FontSize="15" VerticalAlignment="Top" Margin="20,110,20,0" Style="{StaticResource RoundedTextBox2}"/>
                 <Label Content="Пароль:" Height="30" FontSize="15" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="20,150,0,0"/>
                 <PasswordBox x:Name="PasswordText" Height="30" FontSize="15" VerticalAlignment="Top" Margin="20,180,20,0" Style="{StaticResource RoundedPasswordBox}"/>
-                <Button Content="Войти" Height="35" FontSize="15" VerticalAlignment="Top" HorizontalAlignment="Center" Margin="0,240,0,0" Width="150" Style="{StaticResource RoundedButton}"/>
+                <Button Click="SignIn" Content="Войти" Height="35" FontSize="15" VerticalAlignment="Top" HorizontalAlignment="Center" Margin="0,240,0,0" Width="150" Style="{StaticResource RoundedButton}"/>
+                <Label Content="Забыли пароль?" MouseDown="ForgotPassword" Foreground="#FF728EBB" Height="30" FontSize="15" VerticalAlignment="Top" HorizontalAlignment="Center" Margin="0,290,0,0" Style="{StaticResource HoverLabelStyleText}"/>
             </Grid>
         </Border>
     </Grid>

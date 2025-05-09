@@ -15,7 +15,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace SYP.Pages.Elements
+namespace SYP.Pages.Vacations
 {
     /// <summary>
     /// Логика взаимодействия для VacationItem.xaml
@@ -25,6 +25,8 @@ namespace SYP.Pages.Elements
         Vacations MainVacations;
         Models.Vacations Vacation;
         EmployeeContext employeeContext = new EmployeeContext();
+        VacationTypeContext typeContext = new VacationTypeContext();
+        private Models.Users currentUser;
 
         public VacationItem(Vacations MainVacations, Models.Vacations Vacation)
         {
@@ -33,11 +35,18 @@ namespace SYP.Pages.Elements
             this.MainVacations = MainVacations;
             this.Vacation = Vacation;
 
+            currentUser = MainWindow.mw.CurrentUser;
+            if (currentUser != null && currentUser.Role == "Admin")
+            {
+                Edit.Visibility = Visibility.Visible;
+                Delete.Visibility = Visibility.Visible;
+            }
+
             var employee = employeeContext.Employees.FirstOrDefault(x => x.Id == Vacation.EmployeeId);
             lbEmployee.Content = "Сотрудник: " + employee.LastName + " " + employee.FirstName + " " + employee.Patronymic;
-            lbStartDate.Content = "Начало отпуска: " + Vacation.StartDate;
-            lbEndDate.Content = "Конец отпуска: " + Vacation.EndDate;
-            lbType.Content = "Тип: " + Vacation.Type;
+            lbStartDate.Content = "Начало отпуска: " + Vacation.StartDate.ToString("dd.MM.yyyy");
+            lbEndDate.Content = "Конец отпуска: " + Vacation.EndDate.ToString("dd.MM.yyyy");
+            lbType.Content = "Тип: " + typeContext.VacationTypes.FirstOrDefault(x => x.Id == Vacation.TypeId).Name;
         }
 
         private void EditClick(object sender, MouseButtonEventArgs e)

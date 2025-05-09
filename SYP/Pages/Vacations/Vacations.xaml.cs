@@ -14,7 +14,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace SYP.Pages
+namespace SYP.Pages.Vacations
 {
     /// <summary>
     /// Логика взаимодействия для Vacations.xaml
@@ -22,14 +22,21 @@ namespace SYP.Pages
     public partial class Vacations : Page
     {
         public VacationContext VacationContext = new VacationContext();
+        private Models.Users currentUser;
 
         public Vacations()
         {
             InitializeComponent();
 
+            currentUser = MainWindow.mw.CurrentUser;
+            if (currentUser != null && currentUser.Role == "Admin")
+            {
+                add.Visibility = Visibility.Visible;
+            }
+
             showVacations.Children.Clear();
             foreach (Models.Vacations item in VacationContext.Vacations)
-                showVacations.Children.Add(new Elements.VacationItem(this, item));
+                showVacations.Children.Add(new Pages.Vacations.VacationItem(this, item));
         }
 
         private void OpenMain(object sender, MouseButtonEventArgs e)
@@ -44,12 +51,12 @@ namespace SYP.Pages
 
         private void OpenDepartments(object sender, MouseButtonEventArgs e)
         {
-            MainWindow.mw.OpenPages(new Pages.Departments());
+            MainWindow.mw.OpenPages(new Pages.Departments.Departments());
         }
 
         private void OpenPositions(object sender, MouseButtonEventArgs e)
         {
-            MainWindow.mw.OpenPages(new Pages.Positions());
+            MainWindow.mw.OpenPages(new Pages.Positions.Positions());
         }
 
         private void OpenReports(object sender, MouseButtonEventArgs e)
@@ -70,6 +77,11 @@ namespace SYP.Pages
         private void KeyDownSearch(object sender, KeyEventArgs e)
         {
 
+        }
+
+        private void AddVacation(object sender, RoutedEventArgs e)
+        {
+            MainWindow.mw.OpenPages(new Pages.Vacations.VacationEdit(this, null));
         }
     }
 }

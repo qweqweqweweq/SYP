@@ -14,7 +14,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace SYP.Pages.Elements
+namespace SYP.Pages.Positions
 {
     /// <summary>
     /// Логика взаимодействия для PositionItem.xaml
@@ -23,6 +23,7 @@ namespace SYP.Pages.Elements
     {
         Positions MainPositions;
         Models.Positions Position;
+        private Models.Users currentUser;
 
         public PositionItem(Positions MainPositions, Models.Positions Position)
         {
@@ -30,6 +31,13 @@ namespace SYP.Pages.Elements
 
             this.MainPositions = MainPositions;
             this.Position = Position;
+
+            currentUser = MainWindow.mw.CurrentUser;
+            if (currentUser != null && currentUser.Role == "Admin")
+            {
+                Edit.Visibility = Visibility.Visible;
+                Delete.Visibility = Visibility.Visible;
+            }
 
             lbName.Content = Position.Name;
             lbSalary.Content = Position.Salary + "₽";

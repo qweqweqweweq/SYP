@@ -37,17 +37,17 @@ namespace SYP.Pages
 
         private void OpenDepartments(object sender, MouseButtonEventArgs e)
         {
-            MainWindow.mw.OpenPages(new Pages.Departments());
+            MainWindow.mw.OpenPages(new Pages.Departments.Departments());
         }
 
         private void OpenPositions(object sender, MouseButtonEventArgs e)
         {
-            MainWindow.mw.OpenPages(new Pages.Positions());
+            MainWindow.mw.OpenPages(new Pages.Positions.Positions());
         }
 
         private void OpenVacations(object sender, MouseButtonEventArgs e)
         {
-            MainWindow.mw.OpenPages(new Pages.Vacations());
+            MainWindow.mw.OpenPages(new Pages.Vacations.Vacations());
         }
 
         private void OpenSettings(object sender, MouseButtonEventArgs e)
@@ -58,6 +58,11 @@ namespace SYP.Pages
         private void Logout(object sender, MouseButtonEventArgs e)
         {
             MainWindow.mw.OpenPages(new Pages.Authorization());
+        }
+
+        private void FilterReports_Click(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }

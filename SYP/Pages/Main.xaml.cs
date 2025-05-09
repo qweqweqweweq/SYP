@@ -16,6 +16,7 @@ namespace SYP.Pages
         DepartmentContext DepartmentContext = new DepartmentContext();
         VacationContext VacationContext = new VacationContext();
         PositionContext PositionContext = new PositionContext();
+        Models.Users currentUser;
 
         public Main()
         {
@@ -24,8 +25,21 @@ namespace SYP.Pages
             LoadWeather();
             LoadHolidays();
 
-            CountDepartments.Content = "Всего отделов: " + DepartmentContext.Departments.Count();
-            CountEmployees.Content = "Всего сотрудников: " + EmployeeContext.Employees.Count();
+            var currentUser = MainWindow.mw.CurrentUser;
+            using (var context = new EmployeeContext())
+            {
+                var employee = context.Employees.FirstOrDefault(x => x.Id == currentUser.EmployeeId);
+                lbWelcome.Content = $"Добро пожаловать, {employee?.FirstName}";
+            }
+
+            using (var deptCtx = new DepartmentContext())
+            {
+                CountDepartments.Content = "Всего отделов: " + deptCtx.Departments.Count();
+            }
+            using (var emplCtx = new EmployeeContext())
+            {
+                CountEmployees.Content = "Всего сотрудников: " + emplCtx.Employees.Count();
+            }
 
             var countPositions = PositionContext.Positions.Count();
             var occupiedPositions = EmployeeContext.Employees.Select(e => e.PositionId).Distinct().Count();
@@ -86,17 +100,17 @@ namespace SYP.Pages
 
         private void OpenDepartments(object sender, MouseButtonEventArgs e)
         {
-            MainWindow.mw.OpenPages(new Pages.Departments());
+            MainWindow.mw.OpenPages(new Pages.Departments.Departments());
         }
 
         private void OpenPositions(object sender, MouseButtonEventArgs e)
         {
-            MainWindow.mw.OpenPages(new Pages.Positions());
+            MainWindow.mw.OpenPages(new Pages.Positions.Positions());
         }
 
         private void OpenVacations(object sender, MouseButtonEventArgs e)
         {
-            MainWindow.mw.OpenPages(new Pages.Vacations());
+            MainWindow.mw.OpenPages(new Pages.Vacations.Vacations());
         }
 
         private void OpenReports(object sender, MouseButtonEventArgs e)

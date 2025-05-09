@@ -14,7 +14,9 @@
             <ColumnDefinition Width="200"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
-        <Border Background="White" Margin="10" CornerRadius="10" Effect="{DynamicResource ShadowEffect}">
+        <local:ProfileItem x:Name="ProfileOverlay" Visibility="Collapsed" Grid.ColumnSpan="2" Panel.ZIndex="99"/>
+        <Rectangle x:Name="OverlayBackground" Grid.ColumnSpan="2" Fill="Black" Opacity="0.5" Visibility="Collapsed" Panel.ZIndex="10"/>
+        <Border Background="White" Margin="10" CornerRadius="10" Effect="{DynamicResource ShadowEffect}" Panel.ZIndex="0">
             <Grid>
                 <Label Height="40" FontSize="20" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="15,10,0,0" FontFamily="/Fonts/#Montserrat Bold">
                     <StackPanel Orientation="Horizontal">
@@ -83,15 +85,15 @@
         <Border Margin="10" CornerRadius="10" Grid.Column="1">
             <Grid>
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Top" Margin="0,10,0,0" HorizontalAlignment="Center">
-                    <TextBox KeyDown="KeyDownSearch" Width="320" Height="30" FontSize="15" Margin="0,0,10,0" Style="{StaticResource RoundedTextBox}" VerticalContentAlignment="Center" Effect="{DynamicResource ShadowEffect}"/>
-                    <ComboBox x:Name="Status" SelectionChanged="SelectedStatus" FontSize="14" Width="160" Style="{StaticResource ComboBoxStyleEdited}" VerticalContentAlignment="Center">
+                    <TextBox x:Name="search" TextChanged="SearchEmployee" Width="320" Height="30" FontSize="15" Margin="0,0,10,0" Style="{StaticResource RoundedTextBox}" VerticalContentAlignment="Center" Effect="{DynamicResource ShadowEffect}"/>
+                    <ComboBox x:Name="Status" SelectionChanged="SelectedStatus" FontSize="14" Width="160" Style="{StaticResource ComboBoxStyleEdited}" VerticalContentAlignment="Center" Effect="{DynamicResource ShadowEffect}">
                         <ComboBoxItem IsEnabled="False" IsSelected="True">Выберите статус</ComboBoxItem>
                     </ComboBox>
                 </StackPanel>
-                <ScrollViewer Margin="0,50,0,40" VerticalScrollBarVisibility="Hidden" Style="{StaticResource RoundedBorderScrollViewerStyle}">
+                <ScrollViewer Margin="0,50,0,40" VerticalScrollBarVisibility="Hidden" Style="{StaticResource RoundedBorderScrollViewerStyle}" Panel.ZIndex="0">
                     <StackPanel x:Name="showEmployees"/>
                 </ScrollViewer>
-                <Button x:Name="add" Click="AddEmployee" Content="Добавить" Height="30" FontSize="15" Width="100" VerticalAlignment="Bottom" HorizontalAlignment="Right" Style="{StaticResource EditButtonStyle}"/>
+                <Button x:Name="add" Click="AddEmployee" Visibility="Hidden" Content="Добавить" Height="30" FontSize="15" Width="100" VerticalAlignment="Bottom" HorizontalAlignment="Right" Style="{StaticResource EditButtonStyle}"/>
             </Grid>
         </Border>
     </Grid>

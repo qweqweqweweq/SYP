@@ -1,9 +1,9 @@
-﻿<UserControl x:Class="SYP.Pages.Elements.PositionItem"
+﻿<UserControl x:Class="SYP.Pages.Positions.PositionItem"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:SYP.Pages.Elements"
+             xmlns:local="clr-namespace:SYP.Pages.Positions"
              xmlns:fa="http://schemas.fontawesome.io/icons/"
              mc:Ignorable="d" FontFamily="/Fonts/#Montserrat">
     <Border CornerRadius="10" Background="White" Margin="10,10,10,5" Effect="{DynamicResource ShadowEffect}">
@@ -17,11 +17,11 @@
                 <Label x:Name="lbSalary" Content="Зарплата: 20000" Height="35" FontSize="15" HorizontalAlignment="Left" Visibility="Collapsed"/>
             </StackPanel>
             <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="10" HorizontalAlignment="Right" VerticalAlignment="Center">
-                <Label x:Name="Edit" MouseDown="EditClick" Height="40" Width="40" Margin="10,0,0,0" Visibility="Collapsed" Style="{StaticResource HoverLabelStyle}">
-                    <fa:ImageAwesome Icon="Pencil" Width="30" Height="30" Foreground="#FF728EBB"/>
+                <Label x:Name="Edit" MouseDown="EditClick" Height="30" Width="30" Margin="10,0,0,0" Visibility="Collapsed" Style="{StaticResource HoverLabelStyle}">
+                    <fa:ImageAwesome Icon="Pencil" Width="20" Height="20" Foreground="#FF728EBB"/>
                 </Label>
-                <Label x:Name="Delete" MouseDown="DeleteClick" Height="40" Width="40" Margin="5,0,0,0" Visibility="Collapsed" Style="{StaticResource HoverLabelStyle}">
-                    <fa:ImageAwesome Icon="Trash" Width="30" Height="30" Foreground="#FF728EBB"/>
+                <Label x:Name="Delete" MouseDown="DeleteClick" Height="30" Width="30" Margin="5,0,0,0" Visibility="Collapsed" Style="{StaticResource HoverLabelStyle}">
+                    <fa:ImageAwesome Icon="Trash" Width="20" Height="20" Foreground="#FF728EBB"/>
                 </Label>
             </StackPanel>
         </Grid>

@@ -9,16 +9,16 @@
       Title="Employees" FontFamily="/Fonts/#Montserrat">
 
     <Grid Background="#FFDCE4F1">
-        <Border Background="White" CornerRadius="0,0,10,10" Height="60" VerticalAlignment="Top"
+        <Border Background="#FF1F2F47" CornerRadius="0,0,10,10" Height="60" VerticalAlignment="Top"
                 Effect="{DynamicResource ShadowEffect}">
             <Grid>
-                <Label x:Name="lbTitle" Content="Добавление нового сотрудника" FontSize="22" FontFamily="/Fonts/#Montserrat Bold" Foreground="#202a45" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                <Label x:Name="lbTitle" Content="Создание нового сотрудника" FontSize="22" FontFamily="/Fonts/#Montserrat Bold" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center"/>
             </Grid>
         </Border>
 
-        <Border Background="White" CornerRadius="10" Margin="20,70,20,60" Padding="10,5,10,5"
+        <Border Background="White" CornerRadius="10" Margin="20,70,20,60" Padding="20"
                 Effect="{DynamicResource ShadowEffect}">
-            <Grid VerticalAlignment="Center">
+            <Grid VerticalAlignment="Top">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="*" />

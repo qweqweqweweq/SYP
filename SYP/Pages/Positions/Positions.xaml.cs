@@ -14,7 +14,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace SYP.Pages
+namespace SYP.Pages.Positions
 {
     /// <summary>
     /// Логика взаимодействия для Positions.xaml
@@ -22,14 +22,21 @@ namespace SYP.Pages
     public partial class Positions : Page
     {
         public PositionContext PositionContext = new PositionContext();
+        private Models.Users currentUser;
 
         public Positions()
         {
             InitializeComponent();
 
+            currentUser = MainWindow.mw.CurrentUser;
+            if (currentUser != null && currentUser.Role == "Admin")
+            {
+                add.Visibility = Visibility.Visible;
+            }
+
             showPositions.Children.Clear();
             foreach (Models.Positions item in PositionContext.Positions)
-                showPositions.Children.Add(new Elements.PositionItem(this, item));
+                showPositions.Children.Add(new Pages.Positions.PositionItem(this, item));
         }
 
         private void OpenMain(object sender, MouseButtonEventArgs e)
@@ -44,12 +51,12 @@ namespace SYP.Pages
 
         private void OpenDepartments(object sender, MouseButtonEventArgs e)
         {
-            MainWindow.mw.OpenPages(new Pages.Departments());
+            MainWindow.mw.OpenPages(new Pages.Departments.Departments());
         }
 
         private void OpenVacations(object sender, MouseButtonEventArgs e)
         {
-            MainWindow.mw.OpenPages(new Pages.Vacations());
+            MainWindow.mw.OpenPages(new Pages.Vacations.Vacations());
         }
 
         private void OpenReports(object sender, MouseButtonEventArgs e)
@@ -70,6 +77,22 @@ namespace SYP.Pages
         private void KeyDownSearch(object sender, KeyEventArgs e)
         {
 
+        }
+
+        private void AddPosition(object sender, RoutedEventArgs e)
+        {
+            MainWindow.mw.OpenPages(new Pages.Positions.PositionEdit(this, null));
+        }
+
+        private void SearchPosition(object sender, TextChangedEventArgs e)
+        {
+            string searchText = search.Text.ToLower();
+            var result = PositionContext.Positions.Where(x => x.Name.ToLower().Contains(searchText));
+            showPositions.Children.Clear();
+            foreach (var item in result)
+            {
+                showPositions.Children.Add(new PositionItem(this, item));
+            }
         }
     }
 }

@@ -6,7 +6,7 @@
       xmlns:local="clr-namespace:SYP.Pages"
       xmlns:fa="http://schemas.fontawesome.io/icons/"
       mc:Ignorable="d" 
-      d:DesignHeight="450" d:DesignWidth="800"
+      d:DesignHeight="650" d:DesignWidth="1100"
       Title="Reports" FontFamily="/Fonts/#Montserrat">
 
     <Grid Background="#FFDCE4F1">
@@ -80,5 +80,37 @@
                 </Label>
             </Grid>
         </Border>
+
+        <Grid Margin="10" Grid.Column="1">
+            <StackPanel VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10">
+                <WrapPanel Margin="0,0,0,10">
+                    <Label Content="Период:" VerticalAlignment="Center" Margin="0,0,10,0" FontSize="15"/>
+                    <DatePicker x:Name="startDate" Width="150" FontSize="15" Style="{DynamicResource DatePickerStyle1}" Background="White" VerticalContentAlignment="Center"/>
+                    <Label Content="—" VerticalAlignment="Center" Margin="5,0,5,0" FontSize="15"/>
+                    <DatePicker x:Name="endDate" Width="150" FontSize="15" Style="{DynamicResource DatePickerStyle1}" Background="White" VerticalContentAlignment="Center"/>
+                </WrapPanel>
+                <WrapPanel Margin="0,0,0,10">
+                    <Label Content="Отдел:" VerticalAlignment="Center" Margin="0,0,24,0" FontSize="15"/>
+                    <ComboBox x:Name="DepartmentCB" Width="150" FontSize="15" Style="{DynamicResource ComboBoxStyleEdited}"/>
+                    <Label Content="Должность:" VerticalAlignment="Center" FontSize="15" Margin="10,0,0,0"/>
+                    <ComboBox x:Name="PositionCB" Width="150" FontSize="15" Style="{DynamicResource ComboBoxStyleEdited}"/>
+                </WrapPanel>
+                <WrapPanel>
+                    <Label Content="Статус:" VerticalAlignment="Center" Margin="0,0,21.4,0" FontSize="15"/>
+                    <ComboBox x:Name="StatusCB" Width="150" FontSize="15" Style="{DynamicResource ComboBoxStyleEdited}"/>
+                    <Label Content="Тип отчёта:" VerticalAlignment="Center" FontSize="15" Margin="10,0,0,0"/>
+                    <ComboBox x:Name="ReportTypeCB" Width="200" FontSize="15" Style="{DynamicResource ComboBoxStyleEdited}"/>
+                    <Button Content="Показать" Width="120" Height="30" Margin="20,0,0,0" Click="FilterReports_Click" Style="{StaticResource EditButtonStyle}"/>
+                </WrapPanel>
+            </StackPanel>
+            
+            <ScrollViewer Margin="0,130,0,40" VerticalScrollBarVisibility="Hidden" Style="{StaticResource RoundedBorderScrollViewerStyle}">
+                <StackPanel x:Name="showEmployees"/>
+            </ScrollViewer>
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom" HorizontalAlignment="Right">
+                <Button Content="Экспорт в PDF"  Height="30" FontSize="15" Width="140" VerticalAlignment="Bottom" HorizontalAlignment="Right" Style="{StaticResource EditButtonStyle}"/>
+                <Button Content="Экспорт в Excel" Margin="10,0,0,0" Height="30" FontSize="15" Width="140" VerticalAlignment="Bottom" HorizontalAlignment="Right" Style="{StaticResource EditButtonStyle}"/>
+            </StackPanel>
+        </Grid>
     </Grid>
 </Page>
