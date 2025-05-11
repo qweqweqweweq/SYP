@@ -18,7 +18,7 @@ namespace SYP
         {
             InitializeComponent();
             mw = this;
-            OpenPages(new Pages.Authorization());
+            OpenPages(new Pages.Authorization.Authorization());
         }
 
         public void OpenPages(Page page)

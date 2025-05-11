@@ -13,16 +13,26 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace SYP.Pages
+namespace SYP.Pages.Authorization
 {
     /// <summary>
-    /// Логика взаимодействия для testReports.xaml
+    /// Логика взаимодействия для PasswordRecovery.xaml
     /// </summary>
-    public partial class testReports : Page
+    public partial class PasswordRecovery : Page
     {
-        public testReports()
+        public PasswordRecovery()
         {
             InitializeComponent();
+        }
+
+        private void SendRecovery(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void BackAuthorization(object sender, MouseButtonEventArgs e)
+        {
+            MainWindow.mw.OpenPages(new Authorization());
         }
     }
 }

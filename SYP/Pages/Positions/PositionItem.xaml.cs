@@ -1,4 +1,6 @@
-﻿using SYP.Models;
+﻿using SYP.Context;
+using SYP.Models;
+using SYP.Pages.Departments;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -45,12 +47,25 @@ namespace SYP.Pages.Positions
 
         private void EditClick(object sender, MouseButtonEventArgs e)
         {
-
+            MainWindow.mw.OpenPages(new PositionEdit(MainPositions, Position));
         }
 
         private void DeleteClick(object sender, MouseButtonEventArgs e)
         {
-
+            if (MessageBox.Show("Вы уверены, что хотите удалить должность?", "Подтверждение", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+            {
+                using (var context = new PositionContext())
+                {
+                    var positionToDelete = context.Positions.FirstOrDefault(x => x.Id == Position.Id);
+                    if (positionToDelete != null)
+                    {
+                        context.Positions.Remove(positionToDelete);
+                        context.SaveChanges();
+                        MessageBox.Show("Должность удалена");
+                        (this.Parent as Panel).Children.Remove(this);
+                    }
+                }
+            }
         }
     }
 }

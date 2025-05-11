@@ -71,7 +71,7 @@ namespace SYP.Pages.Positions
 
         private void Logout(object sender, MouseButtonEventArgs e)
         {
-            MainWindow.mw.OpenPages(new Pages.Authorization());
+            MainWindow.mw.OpenPages(new Pages.Authorization.Authorization());
         }
 
         private void KeyDownSearch(object sender, KeyEventArgs e)

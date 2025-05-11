@@ -1,18 +1,7 @@
 ﻿using SYP.Context;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace SYP.Pages.Employees
 {
@@ -45,6 +34,8 @@ namespace SYP.Pages.Employees
 
         private void LoadEmployees()
         {
+            if (showEmployees == null) return;
+
             showEmployees.Children.Clear();
             foreach (Models.Employees item in EmployeeContext.Employees)
                 showEmployees.Children.Add(new EmployeeItem(this, item));
@@ -113,17 +104,31 @@ namespace SYP.Pages.Employees
 
         private void Logout(object sender, MouseButtonEventArgs e)
         {
-            MainWindow.mw.OpenPages(new Authorization());
-        }
-
-        private void KeyDownSearch(object sender, KeyEventArgs e)
-        {
-
+            MainWindow.mw.OpenPages(new Authorization.Authorization());
         }
 
         private void SelectedStatus(object sender, SelectionChangedEventArgs e)
         {
-            
+            if (Status.SelectedIndex <= 0)
+            {
+                LoadEmployees();
+                return;
+            }
+
+            string selectedStatusName = Status.SelectedItem.ToString();
+            var selectedStatus = StatusContext.Status.FirstOrDefault(s => s.Name == selectedStatusName);
+
+            if (selectedStatus != null)
+            {
+                var matchedEmployees = EmployeeContext.Employees.Where(e => e.StatusId == selectedStatus.Id).ToList();
+
+                showEmployees.Children.Clear();
+
+                foreach (var item in matchedEmployees)
+                {
+                    showEmployees.Children.Add(new EmployeeItem(this, item));
+                }
+            }
         }
 
         private void AddEmployee(object sender, RoutedEventArgs e)

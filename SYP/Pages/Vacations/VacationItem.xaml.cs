@@ -1,5 +1,6 @@
 ﻿using SYP.Context;
 using SYP.Models;
+using SYP.Pages.Positions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -51,12 +52,25 @@ namespace SYP.Pages.Vacations
 
         private void EditClick(object sender, MouseButtonEventArgs e)
         {
-
+            MainWindow.mw.OpenPages(new VacationEdit(MainVacations, Vacation));
         }
 
         private void DeleteClick(object sender, MouseButtonEventArgs e)
         {
-
+            if (MessageBox.Show("Вы уверены, что хотите удалить отпуск?", "Подтверждение", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+            {
+                using (var context = new VacationContext())
+                {
+                    var vacationToDelete = context.Vacations.FirstOrDefault(x => x.Id == Vacation.Id);
+                    if (vacationToDelete != null)
+                    {
+                        context.Vacations.Remove(vacationToDelete);
+                        context.SaveChanges();
+                        MessageBox.Show("Отпуск удалён");
+                        (this.Parent as Panel).Children.Remove(this);
+                    }
+                }
+            }
         }
     }
 }

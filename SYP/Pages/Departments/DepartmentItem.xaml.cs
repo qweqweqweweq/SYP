@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SYP.Context;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -48,7 +49,20 @@ namespace SYP.Pages.Departments
 
         private void DeleteClick(object sender, MouseButtonEventArgs e)
         {
-
+            if (MessageBox.Show("Вы уверены, что хотите удалить отдел?", "Подтверждение", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+            {
+                using (var context = new DepartmentContext())
+                {
+                    var departmentToDelete = context.Departments.FirstOrDefault(x => x.Id == Department.Id);
+                    if (departmentToDelete != null)
+                    {
+                        context.Departments.Remove(departmentToDelete);
+                        context.SaveChanges();
+                        MessageBox.Show("Отдел удалён");
+                        (this.Parent as Panel).Children.Remove(this);
+                    }
+                }
+            }
         }
     }
 }

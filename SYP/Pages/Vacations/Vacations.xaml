@@ -83,7 +83,10 @@
         <Border Margin="10" CornerRadius="10" Grid.Column="1">
             <Grid>
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Top" Margin="0,10,0,0" HorizontalAlignment="Center">
-                    <TextBox KeyDown="KeyDownSearch" Width="320" Height="30" FontSize="15" Margin="0,0,10,0" Style="{StaticResource RoundedTextBox}" Effect="{DynamicResource ShadowEffect}"/>
+                    <TextBox x:Name="search" TextChanged="SearchEmployee" Width="320" Height="30" FontSize="15" Margin="0,0,10,0" Style="{StaticResource RoundedTextBox}" Effect="{DynamicResource ShadowEffect}"/>
+                    <ComboBox x:Name="Type" SelectionChanged="SelectedType" FontSize="14" Width="180" Style="{StaticResource ComboBoxStyleEdited}" VerticalContentAlignment="Center" Effect="{DynamicResource ShadowEffect}">
+                        <ComboBoxItem IsSelected="True">-Тип отпуска-</ComboBoxItem>
+                    </ComboBox>
                 </StackPanel>
                 <ScrollViewer Margin="0,50,0,40" VerticalScrollBarVisibility="Hidden" Style="{StaticResource RoundedBorderScrollViewerStyle}">
                     <StackPanel x:Name="showVacations"/>

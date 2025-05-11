@@ -125,7 +125,7 @@ namespace SYP.Pages
 
         private void Logout(object sender, MouseButtonEventArgs e)
         {
-            MainWindow.mw.OpenPages(new Pages.Authorization());
+            MainWindow.mw.OpenPages(new Pages.Authorization.Authorization());
         }
     }
 }

@@ -4,7 +4,7 @@ using SYP.Models;
 using System.Windows;
 using System.Windows.Controls;
 
-namespace SYP.Pages
+namespace SYP.Pages.Authorization
 {
     /// <summary>
     /// Логика взаимодействия для Authorization.xaml
@@ -61,7 +61,7 @@ namespace SYP.Pages
 
         private void ForgotPassword(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-
+            MainWindow.mw.OpenPages(new PasswordRecovery());
         }
     }
 }
