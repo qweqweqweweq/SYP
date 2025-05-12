@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SYP.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -46,12 +47,16 @@ namespace SYP.Pages.Departments
         {
             try
             {
-                if (NameDepartment.Text == null)
+                bool isNameValid = !string.IsNullOrWhiteSpace(NameDepartment.Text);
+
+                RegexValidator.ValidateControl(NameDepartment, isNameValid);
+
+                if (!isNameValid)
                 {
                     MessageBox.Show("Введите наименование отдела.");
                     return;
                 }
-                
+
                 if (departments == null)
                 {
                     departments = new Models.Departments()

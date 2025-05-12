@@ -31,5 +31,9 @@ namespace SYP.Models
         {
             datePicker.BorderBrush = isValid ? (Brush)new BrushConverter().ConvertFrom("#FF728EBB") : Brushes.Red;
         }
+        public static void ValidateControl(PasswordBox passwordBox, bool isValid)
+        {
+            passwordBox.BorderBrush = isValid ? (Brush)new BrushConverter().ConvertFrom("#FF728EBB") : Brushes.Red;
+        }
     }
 }

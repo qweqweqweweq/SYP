@@ -86,21 +86,32 @@ namespace SYP.Pages
 
             try
             {
-                if (string.IsNullOrWhiteSpace(oldPassword) || string.IsNullOrWhiteSpace(newPassword) || string.IsNullOrWhiteSpace(confirmPassword))
+                bool isOldPasswordValid = !string.IsNullOrWhiteSpace(oldPassword);
+                bool isNewPasswordValid = !string.IsNullOrWhiteSpace(newPassword);
+                bool isConfirmPasswordValid = !string.IsNullOrWhiteSpace(confirmPassword);
+
+                RegexValidator.ValidateControl(OldPasswordBox, isOldPasswordValid);
+                RegexValidator.ValidateControl(NewPasswordBox, isNewPasswordValid);
+                RegexValidator.ValidateControl(ConfirmPasswordBox, isConfirmPasswordValid);
+
+                if (!isOldPasswordValid || !isNewPasswordValid || !isConfirmPasswordValid)
                 {
                     MessageBox.Show("Пожалуйста, заполните все поля.");
                     return;
                 }
+
                 if (newPassword != confirmPassword)
                 {
                     MessageBox.Show("Новый пароль и подтверждение не совпадают.");
                     return;
                 }
+
                 if (newPassword.Length < 8)
                 {
                     MessageBox.Show("Новый пароль должен содержать минимум 8 символов.");
                     return;
                 }
+
                 using (var context = new UserContext())
                 {
                     var user = context.Users.FirstOrDefault(u => u.Id == currentUser.Id);
@@ -133,28 +144,49 @@ namespace SYP.Pages
             string newUsername = UserNameTextBox.Text.Trim();
             string newEmail = EmailTextBox.Text.Trim();
 
-            if (string.IsNullOrWhiteSpace(newUsername) || string.IsNullOrWhiteSpace(newEmail))
+            bool isUsernameChanged = !string.IsNullOrWhiteSpace(newUsername) && newUsername != currentUser.Username;
+
+            bool isEmailChanged = !string.IsNullOrWhiteSpace(newEmail);
+            using (var context = new EmployeeContext())
             {
-                MessageBox.Show("Пожалуйста, заполните все поля.");
+                var employee = context.Employees.FirstOrDefault(e => e.Id == currentUser.EmployeeId);
+                if (employee != null)
+                {
+                    isEmailChanged = isEmailChanged && newEmail != employee.Email;
+                }
+            }
+
+            if (!isUsernameChanged && !isEmailChanged)
+            {
+                MessageBox.Show("Нет изменений для сохранения.");
                 return;
             }
 
-            bool isUsernameValid = RegexValidator.IsUsernameValid(newUsername);
-            bool isEmailValid = RegexValidator.IsEmailValid(newEmail);
+            bool isUsernameValid = true;
+            bool isEmailValid = true;
 
-            RegexValidator.ValidateControl(UserNameTextBox, isUsernameValid);
-            RegexValidator.ValidateControl(EmailTextBox, isEmailValid);
-
-            if (!isUsernameValid)
+            if (isUsernameChanged)
             {
-                MessageBox.Show("Имя пользователя должно содержать минимум 4 символа и может включать только латинские буквы, цифры, подчёркивания и точки.");
-                return;
+                isUsernameValid = RegexValidator.IsUsernameValid(newUsername);
+                RegexValidator.ValidateControl(UserNameTextBox, isUsernameValid);
+
+                if (!isUsernameValid)
+                {
+                    MessageBox.Show("Имя пользователя должно содержать минимум 4 символа и может включать только латинские буквы, цифры, подчёркивания и точки.");
+                    return;
+                }
             }
 
-            if (!isEmailValid)
+            if (isEmailChanged)
             {
-                MessageBox.Show("Некорректный формат email.");
-                return;
+                isEmailValid = RegexValidator.IsEmailValid(newEmail);
+                RegexValidator.ValidateControl(EmailTextBox, isEmailValid);
+
+                if (!isEmailValid)
+                {
+                    MessageBox.Show("Некорректный формат email.");
+                    return;
+                }
             }
 
             try
@@ -169,29 +201,35 @@ namespace SYP.Pages
                         return;
                     }
 
-                    bool usernameExists = userContext.Users
-                        .Any(u => u.Username == newUsername && u.Id != currentUser.Id);
-
-                    if (usernameExists)
+                    if (isUsernameChanged)
                     {
-                        MessageBox.Show("Пользователь с таким именем пользователя уже существует.");
-                        return;
+                        bool usernameExists = userContext.Users
+                            .Any(u => u.Username == newUsername && u.Id != currentUser.Id);
+
+                        if (usernameExists)
+                        {
+                            MessageBox.Show("Пользователь с таким именем уже существует.");
+                            return;
+                        }
+
+                        user.Username = newUsername;
+                        currentUser.Username = newUsername;
                     }
 
-                    var employee = employeeContext.Employees.FirstOrDefault(e => e.Id == user.EmployeeId);
-                    if (employee == null)
+                    if (isEmailChanged)
                     {
-                        MessageBox.Show("Связанный сотрудник не найден.");
-                        return;
-                    }
+                        var employee = employeeContext.Employees.FirstOrDefault(e => e.Id == user.EmployeeId);
+                        if (employee == null)
+                        {
+                            MessageBox.Show("Связанный сотрудник не найден.");
+                            return;
+                        }
 
-                    user.Username = newUsername;
-                    employee.Email = newEmail;
+                        employee.Email = newEmail;
+                    }
 
                     userContext.SaveChanges();
                     employeeContext.SaveChanges();
-
-                    currentUser.Username = newUsername;
 
                     MessageBox.Show("Данные успешно обновлены.");
                 }
