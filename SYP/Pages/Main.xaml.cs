@@ -2,6 +2,7 @@
 using SYP.Models.Holiday;
 using SYP.Models.Weather;
 using System.Globalization;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 
@@ -66,14 +67,29 @@ namespace SYP.Pages
             {
                 var weather = await WeatherService.GetWeatherAsync();
 
-                WeatherTemp.Text = $"{weather.main.temp}°C, {weather.name}";
-                WeatherDesc.Text = CultureInfo.CurrentCulture.TextInfo.ToTitleCase(weather.weather[0].description);
+                string description = weather.weather[0].description.ToLower();
+                string emoji = GetWeatherEmoji(description);
+
+                WeatherTemp.Text = $"{Math.Round(weather.main.temp)}°C, {weather.name}";
+                WeatherDesc.Text = $"{emoji} {CultureInfo.CurrentCulture.TextInfo.ToTitleCase(description)}";
             }
             catch
             {
                 WeatherTemp.Text = "Ошибка загрузки";
                 WeatherDesc.Text = "";
             }
+        }
+
+        private string GetWeatherEmoji(string description)
+        {
+            if (description.Contains("ясно")) return "☀️";
+            if (description.Contains("облачно") || description.Contains("пасмурно")) return "☁️";
+            if (description.Contains("дождь")) return "🌧️";
+            if (description.Contains("гроза")) return "⛈️";
+            if (description.Contains("снег")) return "❄️";
+            if (description.Contains("туман") || description.Contains("дымка")) return "🌫️";
+
+            return "🌡️";
         }
 
         private async void LoadHolidays()

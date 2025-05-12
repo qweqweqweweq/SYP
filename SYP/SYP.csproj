@@ -29,8 +29,4 @@
     <Resource Include="Images\human-working.png" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Images\Avatars\" />
-  </ItemGroup>
-
 </Project>

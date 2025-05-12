@@ -11,6 +11,8 @@ namespace SYP.Models.Holiday
     {
         public DateTime Date { get; set; }
         public string Name { get; set; }
+
+        public string FormattedDate { get; set; }
     }
 
     public class CalendarData

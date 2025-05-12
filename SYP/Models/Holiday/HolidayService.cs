@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
@@ -21,11 +22,18 @@ namespace SYP.Models.Holiday
                     var json = await response.Content.ReadAsStringAsync();
                     var calendarData = JsonConvert.DeserializeObject<CalendarData>(json);
 
-                    return calendarData?.Holidays
+                    var holidays = calendarData?.Holidays
                         .Where(h => h.Date >= DateTime.Now)
                         .OrderBy(h => h.Date)
                         .Take(3)
                         .ToList();
+
+                    foreach (var holiday in holidays)
+                    {
+                        holiday.FormattedDate = holiday.Date.ToString("d MMMM yyyy", new CultureInfo("ru-RU"));
+                    }
+
+                    return holidays ?? new List<Holiday>();
                 }
                 return new List<Holiday>();
             }

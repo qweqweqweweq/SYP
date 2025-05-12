@@ -1,5 +1,6 @@
 ﻿using SYP.Context;
 using SYP.Models;
+using SYP.Pages.Employees;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,6 +24,9 @@ namespace SYP.Pages
     public partial class Settings : Page
     {
         EmployeeContext employeeContext = new EmployeeContext();
+        DepartmentContext departmentContext = new DepartmentContext();
+        PositionContext positionContext = new PositionContext();
+
         Models.Users currentUser;
 
         public Settings()
@@ -39,6 +43,12 @@ namespace SYP.Pages
                 if (employee != null)
                 {
                     EmailTextBox.Text = employee.Email;
+                    lbFIO.Content = employee.LastName + " " + employee.FirstName + " " + employee.Patronymic;
+                    lbDateBirth.Content = "Дата рождения: " + employee.BirthDate.ToString("d MMMM yyyy");
+                    lbDepartment.Content = "Отдел: " + departmentContext.Departments.Where(x => x.Id == employee.DepartmentId).FirstOrDefault().Name;
+                    lbPosition.Content = "Должность: " + positionContext.Positions.Where(x => x.Id == employee.PositionId).FirstOrDefault().Name;
+                    lbDateHire.Content = "Дата поступления: " + employee.HireDate.ToString("d MMMM yyyy");
+                    lbPhone.Content = "Номер телефона: " + employee.PhoneNumber;
                 }
             }
         }

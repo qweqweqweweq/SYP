@@ -12,6 +12,8 @@ namespace SYP.Pages.Employees
     {
         public EmployeeContext EmployeeContext = new EmployeeContext();
         public StatusContext StatusContext = new StatusContext();
+        public DepartmentContext DepartmentContext = new DepartmentContext();
+        public PositionContext PositionContext = new PositionContext();
         VacationContext VacationContext = new VacationContext();
         private Models.Users currentUser;
 
@@ -29,6 +31,8 @@ namespace SYP.Pages.Employees
             UpdateEmployeeStatuses();
             LoadEmployees();
 
+            foreach (var item in DepartmentContext.Departments) Department.Items.Add(item.Name);
+            foreach (var item in PositionContext.Positions) Position.Items.Add(item.Name);
             foreach (var item in StatusContext.Status) Status.Items.Add(item.Name);
         }
 
@@ -147,6 +151,54 @@ namespace SYP.Pages.Employees
             foreach (var item in result)
             {
                 showEmployees.Children.Add(new EmployeeItem(this, item));
+            }
+        }
+
+        private void SelectedDepartment(object sender, SelectionChangedEventArgs e)
+        {
+            if (Department.SelectedIndex <= 0)
+            {
+                LoadEmployees();
+                return;
+            }
+
+            string selectedDepartmentName = Department.SelectedItem.ToString();
+            var selectedDepartment = DepartmentContext.Departments.FirstOrDefault(s => s.Name == selectedDepartmentName);
+
+            if (selectedDepartment != null)
+            {
+                var matchedEmployees = EmployeeContext.Employees.Where(e => e.DepartmentId == selectedDepartment.Id).ToList();
+
+                showEmployees.Children.Clear();
+
+                foreach (var item in matchedEmployees)
+                {
+                    showEmployees.Children.Add(new EmployeeItem(this, item));
+                }
+            }
+        }
+
+        private void SelectedPosition(object sender, SelectionChangedEventArgs e)
+        {
+            if (Position.SelectedIndex <= 0)
+            {
+                LoadEmployees();
+                return;
+            }
+
+            string selectedPositionName = Position.SelectedItem.ToString();
+            var selectedPosition = PositionContext.Positions.FirstOrDefault(s => s.Name == selectedPositionName);
+
+            if (selectedPosition != null)
+            {
+                var matchedEmployees = EmployeeContext.Employees.Where(e => e.PositionId == selectedPosition.Id).ToList();
+
+                showEmployees.Children.Clear();
+
+                foreach (var item in matchedEmployees)
+                {
+                    showEmployees.Children.Add(new EmployeeItem(this, item));
+                }
             }
         }
     }
