@@ -15,6 +15,9 @@ namespace SYP.Models
         public static bool IsPhoneValid(string phone) =>
             Regex.IsMatch(phone, @"^\+7\d{10}$");
 
+        public static bool IsUsernameValid(string username) =>
+            Regex.IsMatch(username, @"^[a-zA-Z0-9_.]{4,}$");
+
         public static void ValidateControl(TextBox textBox, bool isValid)
         {
             textBox.BorderBrush = isValid ? (Brush)new BrushConverter().ConvertFrom("#FF728EBB") : Brushes.Red;

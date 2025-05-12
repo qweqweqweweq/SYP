@@ -1,4 +1,5 @@
 ﻿using SYP.Context;
+using SYP.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,6 +30,17 @@ namespace SYP.Pages
             InitializeComponent();
 
             currentUser = MainWindow.mw.CurrentUser;
+
+            UserNameTextBox.Text = currentUser.Username;
+
+            using (var context = new EmployeeContext())
+            {
+                var employee = context.Employees.FirstOrDefault(e => e.Id == currentUser.EmployeeId);
+                if (employee != null)
+                {
+                    EmailTextBox.Text = employee.Email;
+                }
+            }
         }
 
         private void OpenMain(object sender, MouseButtonEventArgs e)
@@ -113,6 +125,80 @@ namespace SYP.Pages
             catch (Exception ex)
             {
                 MessageBox.Show("Произошла ошибка.\n" + ex.Message);
+            }
+        }
+
+        private void SavePersonalInfo_Click(object sender, RoutedEventArgs e)
+        {
+            string newUsername = UserNameTextBox.Text.Trim();
+            string newEmail = EmailTextBox.Text.Trim();
+
+            if (string.IsNullOrWhiteSpace(newUsername) || string.IsNullOrWhiteSpace(newEmail))
+            {
+                MessageBox.Show("Пожалуйста, заполните все поля.");
+                return;
+            }
+
+            bool isUsernameValid = RegexValidator.IsUsernameValid(newUsername);
+            bool isEmailValid = RegexValidator.IsEmailValid(newEmail);
+
+            RegexValidator.ValidateControl(UserNameTextBox, isUsernameValid);
+            RegexValidator.ValidateControl(EmailTextBox, isEmailValid);
+
+            if (!isUsernameValid)
+            {
+                MessageBox.Show("Имя пользователя должно содержать минимум 4 символа и может включать только латинские буквы, цифры, подчёркивания и точки.");
+                return;
+            }
+
+            if (!isEmailValid)
+            {
+                MessageBox.Show("Некорректный формат email.");
+                return;
+            }
+
+            try
+            {
+                using (var userContext = new UserContext())
+                using (var employeeContext = new EmployeeContext())
+                {
+                    var user = userContext.Users.FirstOrDefault(u => u.Id == currentUser.Id);
+                    if (user == null)
+                    {
+                        MessageBox.Show("Пользователь не найден.");
+                        return;
+                    }
+
+                    bool usernameExists = userContext.Users
+                        .Any(u => u.Username == newUsername && u.Id != currentUser.Id);
+
+                    if (usernameExists)
+                    {
+                        MessageBox.Show("Пользователь с таким именем пользователя уже существует.");
+                        return;
+                    }
+
+                    var employee = employeeContext.Employees.FirstOrDefault(e => e.Id == user.EmployeeId);
+                    if (employee == null)
+                    {
+                        MessageBox.Show("Связанный сотрудник не найден.");
+                        return;
+                    }
+
+                    user.Username = newUsername;
+                    employee.Email = newEmail;
+
+                    userContext.SaveChanges();
+                    employeeContext.SaveChanges();
+
+                    currentUser.Username = newUsername;
+
+                    MessageBox.Show("Данные успешно обновлены.");
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Ошибка при обновлении данных: " + ex.Message);
             }
         }
     }
