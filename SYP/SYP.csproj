@@ -6,11 +6,16 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
+    <ApplicationIcon>user.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
     <None Remove="Fonts\Montserrat-VariableFont_wght.ttf" />
     <None Remove="Images\human-working.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="user.ico" />
   </ItemGroup>
 
   <ItemGroup>
