@@ -78,11 +78,6 @@ namespace SYP.Pages
             MainWindow.mw.OpenPages(new Pages.Vacations.Vacations());
         }
 
-        private void OpenReports(object sender, MouseButtonEventArgs e)
-        {
-            MainWindow.mw.OpenPages(new Pages.Reports());
-        }
-
         private void Logout(object sender, MouseButtonEventArgs e)
         {
             MainWindow.mw.OpenPages(new Pages.Authorization.Authorization());

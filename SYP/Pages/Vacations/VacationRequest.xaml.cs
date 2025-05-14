@@ -66,7 +66,7 @@ namespace SYP.Pages.Vacations
                 return;
             }
 
-            var selectedType = Type.SelectedItem as VacationTypes;
+            var selectedType = typeContext.VacationTypes.FirstOrDefault(x => x.Name == Type.SelectedItem.ToString());
             if (selectedType == null)
             {
                 MessageBox.Show("Выбран некорректный тип отпуска.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);

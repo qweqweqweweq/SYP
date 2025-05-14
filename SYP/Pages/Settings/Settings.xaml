@@ -58,13 +58,6 @@
                     </StackPanel>
                 </Label>
 
-                <Label MouseDown="OpenReports" Style="{StaticResource HoverLabelStyle}" Height="30" FontSize="15" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="20,265,0,0">
-                    <StackPanel Orientation="Horizontal">
-                        <fa:ImageAwesome Icon="FileText" Width="16" Height="16" Margin="0,0,5,0" Foreground="#FF728EBB"/>
-                        <TextBlock Text="Отчёты"/>
-                    </StackPanel>
-                </Label>
-
                 <Label Style="{StaticResource LabelWithIconStyle}" Height="30" FontSize="15" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="20,0,0,45">
                     <StackPanel Orientation="Horizontal">
                         <fa:ImageAwesome Icon="Cog" Width="16" Height="16" Margin="0,0,5,0" Foreground="#FF728EBB"/>

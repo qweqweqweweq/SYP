@@ -97,11 +97,6 @@ namespace SYP.Pages.Employees
             MainWindow.mw.OpenPages(new Vacations.Vacations());
         }
 
-        private void OpenReports(object sender, MouseButtonEventArgs e)
-        {
-            MainWindow.mw.OpenPages(new Reports());
-        }
-
         private void OpenSettings(object sender, MouseButtonEventArgs e)
         {
             MainWindow.mw.OpenPages(new Settings());

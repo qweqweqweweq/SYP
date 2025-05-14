@@ -54,7 +54,6 @@ namespace SYP.Pages.Vacations
             if (currentUser != null && currentUser.Role == "Admin" && pendingCount > 0)
             {
                 PendingLabel.Visibility = Visibility.Visible;
-                MessageBox.Show($"Есть {pendingCount} новых заявок на отпуск.", "Уведомление", MessageBoxButton.OK, MessageBoxImage.Information);
             }
         }
 
@@ -117,11 +116,6 @@ namespace SYP.Pages.Vacations
             MainWindow.mw.OpenPages(new Pages.Positions.Positions());
         }
 
-        private void OpenReports(object sender, MouseButtonEventArgs e)
-        {
-            MainWindow.mw.OpenPages(new Pages.Reports());
-        }
-
         private void OpenSettings(object sender, MouseButtonEventArgs e)
         {
             MainWindow.mw.OpenPages(new Pages.Settings());
@@ -180,6 +174,18 @@ namespace SYP.Pages.Vacations
         private void OpenVacationRequest(object sender, RoutedEventArgs e)
         {
             MainWindow.mw.OpenPages(new VacationRequest());
+        }
+
+        private void ShowPendingRequests(object sender, RoutedEventArgs e)
+        {
+            var pendingVacations = VacationContext.Vacations.Where(v => v.StatusId == 1).ToList();
+
+            showVacations.Children.Clear();
+
+            foreach (var item in pendingVacations)
+            {
+                showVacations.Children.Add(new VacationItem(this, item));
+            }
         }
     }
 }

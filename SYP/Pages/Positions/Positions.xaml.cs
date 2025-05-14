@@ -60,11 +60,6 @@ namespace SYP.Pages.Positions
             MainWindow.mw.OpenPages(new Pages.Vacations.Vacations());
         }
 
-        private void OpenReports(object sender, MouseButtonEventArgs e)
-        {
-            MainWindow.mw.OpenPages(new Pages.Reports());
-        }
-
         private void OpenSettings(object sender, MouseButtonEventArgs e)
         {
             MainWindow.mw.OpenPages(new Pages.Settings());

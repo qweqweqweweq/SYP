@@ -84,7 +84,7 @@
                 <ScrollViewer Margin="0,50,0,40" VerticalScrollBarVisibility="Hidden" Style="{StaticResource RoundedBorderScrollViewerStyle}">
                     <StackPanel x:Name="showVacations"/>
                 </ScrollViewer>
-                <Label x:Name="PendingLabel" Content="🔔 Новые заявки" Visibility="Collapsed" FontWeight="Medium" FontSize="14" Foreground="#ac2517" Margin="10" VerticalAlignment="Top" HorizontalAlignment="Left"/>
+                <Button x:Name="PendingLabel" Click="ShowPendingRequests" Visibility="Collapsed" HorizontalAlignment="Left" FontSize="14" Height="25" Width="410" Content="🔔 Есть новые заявки — нажмите, чтобы просмотреть" Style="{StaticResource EditButtonStyle}"/>
                 <Button x:Name="add" Click="AddVacation" Visibility="Collapsed" Content="Добавить" Height="30" FontSize="15" Width="100" VerticalAlignment="Bottom" HorizontalAlignment="Right" Style="{StaticResource EditButtonStyle}"/>
                 <Button x:Name="request" Click="OpenVacationRequest" Visibility="Collapsed" Content="Подать заявку" Height="30" FontSize="15" Width="140" VerticalAlignment="Bottom" HorizontalAlignment="Right" Style="{StaticResource EditButtonStyle}"/>
             </Grid>
