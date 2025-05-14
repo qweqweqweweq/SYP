@@ -11,7 +11,7 @@ namespace SYP.Pages.Employees
     public partial class Employees : Page
     {
         public EmployeeContext EmployeeContext = new EmployeeContext();
-        public StatusContext StatusContext = new StatusContext();
+        public EmployeeStatusContext StatusContext = new EmployeeStatusContext();
         public DepartmentContext DepartmentContext = new DepartmentContext();
         public PositionContext PositionContext = new PositionContext();
         VacationContext VacationContext = new VacationContext();
@@ -27,6 +27,7 @@ namespace SYP.Pages.Employees
             if (currentUser != null && currentUser.Role == "Admin")
             {
                 add.Visibility = Visibility.Visible;
+                settings.Visibility = Visibility.Hidden;
             }
             UpdateEmployeeStatuses();
             LoadEmployees();

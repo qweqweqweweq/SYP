@@ -6,7 +6,7 @@
       xmlns:local="clr-namespace:SYP.Pages.Vacations"
       xmlns:fa="http://schemas.fontawesome.io/icons/"
       mc:Ignorable="d" 
-      d:DesignHeight="450" d:DesignWidth="800"
+      d:DesignHeight="650" d:DesignWidth="1000"
       Title="Vacations" FontFamily="/Fonts/#Montserrat">
 
     <Grid Background="#FFDCE4F1">
@@ -58,7 +58,7 @@
                     </StackPanel>
                 </Label>
 
-                <Label MouseDown="OpenSettings" Style="{StaticResource HoverLabelStyle}" Height="30" FontSize="15" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="20,0,0,45">
+                <Label x:Name="settings" MouseDown="OpenSettings" Style="{StaticResource HoverLabelStyle}" Height="30" FontSize="15" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="20,0,0,45">
                     <StackPanel Orientation="Horizontal">
                         <fa:ImageAwesome Icon="Cog" Width="16" Height="16" Margin="0,0,5,0" Foreground="#FF728EBB"/>
                         <TextBlock Text="Настройки"/>
@@ -84,7 +84,9 @@
                 <ScrollViewer Margin="0,50,0,40" VerticalScrollBarVisibility="Hidden" Style="{StaticResource RoundedBorderScrollViewerStyle}">
                     <StackPanel x:Name="showVacations"/>
                 </ScrollViewer>
-                <Button x:Name="add" Click="AddVacation" Visibility="Hidden" Content="Добавить" Height="30" FontSize="15" Width="100" VerticalAlignment="Bottom" HorizontalAlignment="Right" Style="{StaticResource EditButtonStyle}"/>
+                <Label x:Name="PendingLabel" Content="🔔 Новые заявки" Visibility="Collapsed" FontWeight="Medium" FontSize="14" Foreground="#ac2517" Margin="10" VerticalAlignment="Top" HorizontalAlignment="Left"/>
+                <Button x:Name="add" Click="AddVacation" Visibility="Collapsed" Content="Добавить" Height="30" FontSize="15" Width="100" VerticalAlignment="Bottom" HorizontalAlignment="Right" Style="{StaticResource EditButtonStyle}"/>
+                <Button x:Name="request" Click="OpenVacationRequest" Visibility="Collapsed" Content="Подать заявку" Height="30" FontSize="15" Width="140" VerticalAlignment="Bottom" HorizontalAlignment="Right" Style="{StaticResource EditButtonStyle}"/>
             </Grid>
         </Border>
     </Grid>

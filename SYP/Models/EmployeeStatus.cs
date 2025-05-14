@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SYP.Models
 {
-    public class Status
+    public class EmployeeStatus
     {
         [Key]
         public int Id { get; set; }

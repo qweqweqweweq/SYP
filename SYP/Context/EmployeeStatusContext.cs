@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 
 namespace SYP.Context
 {
-    public class StatusContext : DbContext
+    public class EmployeeStatusContext : DbContext
     {
-        public DbSet<Status> Status { get; set; }
+        public DbSet<EmployeeStatus> Status { get; set; }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseMySql(Config.connection, Config.version);

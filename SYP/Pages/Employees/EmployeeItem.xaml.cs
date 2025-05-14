@@ -25,7 +25,7 @@ namespace SYP.Pages.Employees
         Models.Employees Employee;
         PositionContext positionContext = new PositionContext();
         DepartmentContext departmentContext = new DepartmentContext();
-        StatusContext statusContext = new StatusContext();
+        EmployeeStatusContext statusContext = new EmployeeStatusContext();
         VacationContext vacationContext = new VacationContext();
         private Models.Users currentUser;
 

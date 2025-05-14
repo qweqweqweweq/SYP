@@ -32,6 +32,7 @@ namespace SYP.Pages.Departments
             if (currentUser != null && currentUser.Role == "Admin")
             {
                 add.Visibility = Visibility.Visible;
+                settings.Visibility = Visibility.Hidden;
             }
 
             showDepartments.Children.Clear();

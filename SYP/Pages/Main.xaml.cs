@@ -27,6 +27,11 @@ namespace SYP.Pages
             LoadHolidays();
 
             var currentUser = MainWindow.mw.CurrentUser;
+            if (currentUser != null && currentUser.Role == "Admin")
+            {
+                settings.Visibility = Visibility.Hidden;
+            }
+
             using (var context = new EmployeeContext())
             {
                 var employee = context.Employees.FirstOrDefault(x => x.Id == currentUser.EmployeeId);

@@ -27,7 +27,7 @@ namespace SYP.Pages.Employees
 
         DepartmentContext departmentContext = new DepartmentContext();
         PositionContext positionContext = new PositionContext();
-        StatusContext statusContext = new StatusContext();
+        EmployeeStatusContext statusContext = new EmployeeStatusContext();
 
         public EmployeeEdit(Employees MainEmployees, Models.Employees employees)
         {

@@ -26,7 +26,9 @@ namespace SYP.Pages.Vacations
         Models.Vacations vacations;
 
         EmployeeContext employeeContext = new EmployeeContext();
+        VacationContext vacationContext = new VacationContext();
         VacationTypeContext typeContext = new VacationTypeContext();
+        VacationStatusContext statusContext = new VacationStatusContext();
 
         public VacationEdit(Vacations MainVacations, Models.Vacations vacations)
         {
@@ -41,15 +43,23 @@ namespace SYP.Pages.Vacations
             foreach (var item in typeContext.VacationTypes)
                 Type.Items.Add(item.Name);
 
+            foreach (var item in statusContext.VacationStatus)
+                Status.Items.Add(item.Name);
+
             if (vacations != null)
             {
                 lbTitle.Content = "Изменение существующего отпуска";
 
-                Employee.SelectedItem = employeeContext.Employees.Where(x => x.Id == vacations.EmployeeId).FirstOrDefault()?.LastName + " " + 
-                    employeeContext.Employees.Where(x => x.Id == vacations.EmployeeId).FirstOrDefault()?.FirstName;
+                var selectedEmployee = employeeContext.Employees.FirstOrDefault(x => x.Id == vacations.EmployeeId);
+                if (selectedEmployee != null)
+                {
+                    Employee.SelectedItem = selectedEmployee.LastName + " " + selectedEmployee.FirstName + " " + selectedEmployee.Patronymic;
+                }
+
                 dateStart.SelectedDate = vacations.StartDate;
                 dateEnd.SelectedDate = vacations.EndDate;
                 Type.SelectedItem = typeContext.VacationTypes.Where(x => x.Id == vacations.TypeId).FirstOrDefault()?.Name;
+                Status.SelectedItem = statusContext.VacationStatus.Where(x => x.Id == vacations.StatusId).FirstOrDefault()?.Name;
             }
         }
 
@@ -62,34 +72,56 @@ namespace SYP.Pages.Vacations
         {
             try
             {
+                if (dateStart.SelectedDate == null || dateEnd.SelectedDate == null)
+                {
+                    MessageBox.Show("Пожалуйста, выберите дату начала и дату окончания отпуска.");
+                    return;
+                }
+
                 DateTime start = dateStart.SelectedDate.Value;
                 DateTime end = dateEnd.SelectedDate.Value;
-                var employee = employeeContext.Employees.Where(x => x.LastName + " " + x.FirstName + " " + x.Patronymic == Employee.SelectedItem.ToString()).FirstOrDefault();
-                var vacationType = typeContext.VacationTypes.Where(x => x.Name == Type.SelectedItem.ToString()).FirstOrDefault();
-
-                if (Employee.SelectedItem == null)
-                {
-                    MessageBox.Show("Выберите сотрудника.");
-                    return;
-                }
-                if (dateStart.SelectedDate == null)
-                {
-                    MessageBox.Show("Выберите дату начала отпуска.");
-                    return;
-                }
-                if (dateEnd.SelectedDate == null)
-                {
-                    MessageBox.Show("Выберите дату окончания отпуска.");
-                    return;
-                }
                 if (end < start)
                 {
                     MessageBox.Show("Дата окончания отпуска не может быть раньше даты начала.");
                     return;
                 }
+                if (Employee.SelectedItem == null)
+                {
+                    MessageBox.Show("Выберите сотрудника.");
+                    return;
+                }
+
+                var employeeFullName = Employee.SelectedItem.ToString();
+                var employee = employeeContext.Employees.FirstOrDefault(x =>
+                    (x.LastName + " " + x.FirstName + " " + x.Patronymic) == employeeFullName);
+                if (employee == null)
+                {
+                    MessageBox.Show("Не удалось найти сотрудника. Проверьте правильность выбора.");
+                    return;
+                }
                 if (Type.SelectedItem == null)
                 {
                     MessageBox.Show("Выберите тип отпуска.");
+                    return;
+                }
+
+                var vacationType = typeContext.VacationTypes.FirstOrDefault(x => x.Name == Type.SelectedItem.ToString());
+                if (vacationType == null)
+                {
+                    MessageBox.Show("Тип отпуска не найден.");
+                    return;
+                }
+
+                if (Status.SelectedItem == null)
+                {
+                    MessageBox.Show("Выберите статус отпуска.");
+                    return;
+                }
+
+                var vacationStatus = statusContext.VacationStatus.FirstOrDefault(x => x.Name == Status.SelectedItem.ToString());
+                if (vacationStatus == null)
+                {
+                    MessageBox.Show("Статус отпуска не найден.");
                     return;
                 }
 
@@ -100,7 +132,8 @@ namespace SYP.Pages.Vacations
                         EmployeeId = employee.Id,
                         StartDate = start,
                         EndDate = end,
-                        TypeId = vacationType.Id
+                        TypeId = vacationType.Id,
+                        StatusId = vacationStatus.Id
                     };
                     MainVacations.VacationContext.Vacations.Add(vacations);
                 }
@@ -110,13 +143,16 @@ namespace SYP.Pages.Vacations
                     vacations.StartDate = start;
                     vacations.EndDate = end;
                     vacations.TypeId = vacationType.Id;
+                    vacations.StatusId = vacationStatus.Id;
                 }
                 MainVacations.VacationContext.SaveChanges();
+                MessageBox.Show("Отпуск успешно сохранён.");
+
                 MainWindow.mw.OpenPages(new Pages.Vacations.Vacations());
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Возникла ошибка.\n" + ex.Message);
+                MessageBox.Show("Возникла ошибка при сохранении отпуска.\n" + ex.Message);
             }
         }
     }

@@ -32,16 +32,30 @@ namespace SYP.Pages.Vacations
         {
             InitializeComponent();
 
-            RemoveExpiredVacations();
+            MarkExpiredVacations();
             LoadVacations();
 
             currentUser = MainWindow.mw.CurrentUser;
+
             if (currentUser != null && currentUser.Role == "Admin")
             {
                 add.Visibility = Visibility.Visible;
+                settings.Visibility = Visibility.Hidden;
+            }
+            else
+            {
+                request.Visibility = Visibility.Visible;
             }
 
             foreach (var item in typeContext.VacationTypes) Type.Items.Add(item.Name);
+
+            var pendingCount = VacationContext.Vacations.Count(v => v.StatusId == 1);
+
+            if (currentUser != null && currentUser.Role == "Admin" && pendingCount > 0)
+            {
+                PendingLabel.Visibility = Visibility.Visible;
+                MessageBox.Show($"Есть {pendingCount} новых заявок на отпуск.", "Уведомление", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
         }
 
         private void LoadVacations()
@@ -49,28 +63,37 @@ namespace SYP.Pages.Vacations
             if (showVacations == null) return;
 
             showVacations.Children.Clear();
-            foreach (var vac in VacationContext.Vacations.ToList())
+
+            var vacations = VacationContext.Vacations
+                .OrderBy(v => v.StatusId == 4)
+                .ThenByDescending(v => v.StartDate)
+                .ToList();
+
+            foreach (var vac in vacations)
             {
                 showVacations.Children.Add(new VacationItem(this, vac));
             }
         }
 
-        private void RemoveExpiredVacations()
+        private void MarkExpiredVacations()
         {
             try
             {
                 var today = DateTime.Now.Date;
-                var expired = VacationContext.Vacations.Where(v => v.EndDate < today).ToList();
+                var expired = VacationContext.Vacations
+                    .Where(v => v.EndDate < today && v.StatusId != 4)
+                    .ToList();
 
-                if (expired.Any())
+                foreach (var vac in expired)
                 {
-                    VacationContext.Vacations.RemoveRange(expired);
-                    VacationContext.SaveChanges();
+                    vac.StatusId = 4;
                 }
+
+                VacationContext.SaveChanges();
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Ошибка при удалении завершённых отпусков: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Ошибка при обновлении завершённых отпусков: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -152,6 +175,11 @@ namespace SYP.Pages.Vacations
             {
                 showVacations.Children.Add(new VacationItem(this, item));
             }
+        }
+
+        private void OpenVacationRequest(object sender, RoutedEventArgs e)
+        {
+            MainWindow.mw.OpenPages(new VacationRequest());
         }
     }
 }

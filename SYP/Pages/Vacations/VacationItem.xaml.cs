@@ -27,6 +27,7 @@ namespace SYP.Pages.Vacations
         Models.Vacations Vacation;
         EmployeeContext employeeContext = new EmployeeContext();
         VacationTypeContext typeContext = new VacationTypeContext();
+        VacationStatusContext statusContext = new VacationStatusContext();
         private Models.Users currentUser;
 
         public VacationItem(Vacations MainVacations, Models.Vacations Vacation)
@@ -48,6 +49,20 @@ namespace SYP.Pages.Vacations
             lbStartDate.Content = "Начало отпуска: " + Vacation.StartDate.ToString("dd.MM.yyyy");
             lbEndDate.Content = "Конец отпуска: " + Vacation.EndDate.ToString("dd.MM.yyyy");
             lbType.Content = "Тип: " + typeContext.VacationTypes.FirstOrDefault(x => x.Id == Vacation.TypeId).Name;
+            lbStatus.Content = "Статус: " + statusContext.VacationStatus.FirstOrDefault(x => x.Id == Vacation.StatusId).Name;
+
+            if (Vacation.StatusId == 4)
+            {
+                var lightGray = (Color)ColorConverter.ConvertFromString("#FFEEEEEE");
+                border.Background = new SolidColorBrush(lightGray);
+                Edit.Visibility = Visibility.Collapsed;
+                Delete.Visibility = Visibility.Collapsed;
+            }
+            else
+            {
+                Edit.Visibility = Visibility.Visible;
+                Delete.Visibility = Visibility.Visible;
+            }
         }
 
         private void EditClick(object sender, MouseButtonEventArgs e)
@@ -59,16 +74,23 @@ namespace SYP.Pages.Vacations
         {
             if (MessageBox.Show("Вы уверены, что хотите удалить отпуск?", "Подтверждение", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
             {
-                using (var context = new VacationContext())
+                try
                 {
-                    var vacationToDelete = context.Vacations.FirstOrDefault(x => x.Id == Vacation.Id);
-                    if (vacationToDelete != null)
+                    using (var context = new VacationContext())
                     {
-                        context.Vacations.Remove(vacationToDelete);
-                        context.SaveChanges();
-                        MessageBox.Show("Отпуск удалён");
-                        (this.Parent as Panel).Children.Remove(this);
+                        var vacationToDelete = context.Vacations.FirstOrDefault(x => x.Id == Vacation.Id);
+                        if (vacationToDelete != null)
+                        {
+                            context.Vacations.Remove(vacationToDelete);
+                            context.SaveChanges();
+                            MessageBox.Show("Отпуск удалён");
+                            (this.Parent as Panel).Children.Remove(this);
+                        }
                     }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Ошибка.\n" + ex.Message);
                 }
             }
         }

@@ -32,6 +32,7 @@ namespace SYP.Pages.Positions
             if (currentUser != null && currentUser.Role == "Admin")
             {
                 add.Visibility = Visibility.Visible;
+                settings.Visibility = Visibility.Hidden;
             }
 
             showPositions.Children.Clear();

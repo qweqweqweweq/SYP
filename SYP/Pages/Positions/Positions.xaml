@@ -58,7 +58,7 @@
                     </StackPanel>
                 </Label>
 
-                <Label MouseDown="OpenSettings" Style="{StaticResource HoverLabelStyle}" Height="30" FontSize="15" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="20,0,0,45">
+                <Label x:Name="settings" MouseDown="OpenSettings" Style="{StaticResource HoverLabelStyle}" Height="30" FontSize="15" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="20,0,0,45">
                     <StackPanel Orientation="Horizontal">
                         <fa:ImageAwesome Icon="Cog" Width="16" Height="16" Margin="0,0,5,0" Foreground="#FF728EBB"/>
                         <TextBlock Text="Настройки"/>
