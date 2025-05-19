@@ -176,15 +176,27 @@ namespace SYP.Pages.Vacations
             MainWindow.mw.OpenPages(new VacationRequest());
         }
 
+        private bool showingPendingOnly = false;
+
         private void ShowPendingRequests(object sender, RoutedEventArgs e)
         {
-            var pendingVacations = VacationContext.Vacations.Where(v => v.StatusId == 1).ToList();
-
-            showVacations.Children.Clear();
-
-            foreach (var item in pendingVacations)
+            if (showingPendingOnly)
             {
-                showVacations.Children.Add(new VacationItem(this, item));
+                LoadVacations();
+                showingPendingOnly = false;
+            }
+            else
+            {
+                var pendingVacations = VacationContext.Vacations.Where(v => v.StatusId == 1).ToList();
+
+                showVacations.Children.Clear();
+
+                foreach (var item in pendingVacations)
+                {
+                    showVacations.Children.Add(new VacationItem(this, item));
+                }
+
+                showingPendingOnly = true;
             }
         }
     }
