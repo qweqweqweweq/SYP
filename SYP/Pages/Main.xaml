@@ -4,6 +4,7 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:SYP.Pages"
+      xmlns:controls="clr-namespace:SYP.Pages"
       xmlns:fa="http://schemas.fontawesome.io/icons/"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
@@ -73,6 +74,7 @@
                 </Label>
             </Grid>
         </Border>
+        <controls:NotificationItem x:Name="notificationItem" Opacity="0" Visibility="Collapsed" Grid.ColumnSpan="2" VerticalAlignment="Bottom" Grid.RowSpan="2" HorizontalAlignment="Right" Panel.ZIndex="10" Margin="20"/>
         <ScrollViewer Margin="10" Grid.Column="1" VerticalScrollBarVisibility="Hidden">
             <Grid>
                 <Grid.ColumnDefinitions>
@@ -95,7 +97,8 @@
                 <Viewbox Stretch="Uniform" VerticalAlignment="Center" Grid.Column="1" Effect="{DynamicResource ShadowEffect}" Margin="10">
                     <Calendar Style="{StaticResource RoundedCalendarStyle}"/>
                 </Viewbox>
-                <Border Grid.Column="1" Grid.Row="1" Background="White" CornerRadius="10" Padding="10" VerticalAlignment="Top" Margin="10,10,10,0" Effect="{DynamicResource ShadowEffect}">
+
+                <Border Grid.Column="1" Grid.Row="1" Background="White" CornerRadius="10" Padding="10" VerticalAlignment="Top" Margin="10,0,10,0" Effect="{DynamicResource ShadowEffect}">
                     <StackPanel Orientation="Horizontal" x:Name="WeatherPanel" VerticalAlignment="Center">
                         <StackPanel>
                             <TextBlock x:Name="WeatherTemp" FontWeight="Bold" FontSize="14" Foreground="#202a45" Margin="0,0,0,5"/>
@@ -117,6 +120,7 @@
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
+                        
                     </StackPanel>
                 </Border>
             </Grid>

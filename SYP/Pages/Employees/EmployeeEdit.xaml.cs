@@ -42,7 +42,7 @@ namespace SYP.Pages.Employees
             foreach (var item in departmentContext.Departments)
                 department.Items.Add(item.Name);
 
-            foreach (var item in statusContext.Status)
+            foreach (var item in statusContext.EmployeeStatus)
                 status.Items.Add(item.Name);
 
             if (employees != null)
@@ -55,7 +55,7 @@ namespace SYP.Pages.Employees
                 dateHire.Text = employees.HireDate.ToString("dd.MM.yyyy");
                 email.Text = employees.Email;
                 phoneNumber.Text = employees.PhoneNumber;
-                status.SelectedItem = statusContext.Status.Where(x => x.Id == employees.StatusId).FirstOrDefault().Name;
+                status.SelectedItem = statusContext.EmployeeStatus.Where(x => x.Id == employees.StatusId).FirstOrDefault().Name;
             }
 
             CheckValidation();
@@ -168,7 +168,7 @@ namespace SYP.Pages.Employees
                         HireDate = hire,
                         Email = email.Text,
                         PhoneNumber = phoneNumber.Text,
-                        StatusId = statusContext.Status.Where(x => x.Name ==  status.SelectedItem.ToString()).First().Id
+                        StatusId = statusContext.EmployeeStatus.Where(x => x.Name ==  status.SelectedItem.ToString()).First().Id
                     };
                     MainEmployees.EmployeeContext.Employees.Add(employees);
                 }
@@ -183,7 +183,7 @@ namespace SYP.Pages.Employees
                     employees.HireDate = hire;
                     employees.Email = email.Text;
                     employees.PhoneNumber = phoneNumber.Text;
-                    employees.StatusId = statusContext.Status.Where(x => x.Name == status.SelectedItem.ToString()).First().Id;
+                    employees.StatusId = statusContext.EmployeeStatus.Where(x => x.Name == status.SelectedItem.ToString()).First().Id;
                 }
                 MainEmployees.EmployeeContext.SaveChanges();
                 MainWindow.mw.OpenPages(new Pages.Employees.Employees());

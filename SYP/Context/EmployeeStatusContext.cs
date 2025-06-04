@@ -11,7 +11,7 @@ namespace SYP.Context
 {
     public class EmployeeStatusContext : DbContext
     {
-        public DbSet<EmployeeStatus> Status { get; set; }
+        public DbSet<EmployeeStatus> EmployeeStatus { get; set; }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseMySql(Config.connection, Config.version);

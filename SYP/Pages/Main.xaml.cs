@@ -5,6 +5,7 @@ using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media.Animation;
 
 namespace SYP.Pages
 {
@@ -23,10 +24,36 @@ namespace SYP.Pages
         {
             InitializeComponent();
 
+            currentUser = MainWindow.mw.CurrentUser;
+
             LoadWeather();
             LoadHolidays();
+            CheckUpcomingVacation();
+            CheckBirthday();
 
-            var currentUser = MainWindow.mw.CurrentUser;
+            int newVacationRequestsCount = GetNewVacationRequestsCount();
+            bool isAdmin = currentUser.Role == "Admin";
+
+            notificationItem.ShowVacationRequestsNotification(newVacationRequestsCount, isAdmin);
+
+            if (notificationItem.HasNotifications())
+            {
+                notificationItem.Visibility = Visibility.Visible;
+
+                var fadeIn = new DoubleAnimation
+                {
+                    From = 0.0,
+                    To = 1.0,
+                    Duration = TimeSpan.FromSeconds(0.3)
+                };
+
+                notificationItem.BeginAnimation(UIElement.OpacityProperty, fadeIn);
+            }
+            else
+            {
+                notificationItem.Visibility = Visibility.Collapsed;
+            }
+
             if (currentUser != null && currentUser.Role == "Admin")
             {
                 settings.Visibility = Visibility.Hidden;
@@ -52,8 +79,92 @@ namespace SYP.Pages
             var freePositions = countPositions - occupiedPositions;
 
             CountFreePositions.Content = "Свободные должности: " + freePositions;
-            CountVacation.Content = "В отпуске сейчас: " + VacationContext.Vacations.Count() + $" {GetEmployeeText(VacationContext.Vacations.Count())}";
 
+            var today = DateTime.Today;
+
+            int activeVacationsCount = VacationContext.Vacations.Count(v => v.EndDate.Date >= today && v.StatusId == 2);
+
+            CountVacation.Content = "В отпуске сейчас: " + activeVacationsCount + $" {GetEmployeeText(activeVacationsCount)}";
+
+        }
+
+        private int GetNewVacationRequestsCount()
+        {
+            using (var context = new VacationContext())
+            {
+                return context.Vacations.Count(v => v.StatusId == 1);
+            }
+        }
+
+        private void CheckBirthday()
+        {
+            using (var context = new EmployeeContext())
+            {
+                DateTime today = DateTime.Today;
+
+                var birthdayEmployees = context.Employees
+                    .Where(e => e.BirthDate.Day == today.Day && e.BirthDate.Month == today.Month)
+                    .ToList();
+
+                if (birthdayEmployees.Any())
+                {
+                    string names = string.Join(", ", birthdayEmployees.Select(e => $"{e.LastName} {e.FirstName} {e.Patronymic}"));
+
+                    string message;
+                    if (birthdayEmployees.Count == 1)
+                    {
+                        message = $"• Сегодня день рождения у: {names}!";
+                    }
+                    else
+                    {
+                        message = $"• Сегодня дни рождения у: {names}!";
+                    }
+
+                    notificationItem.ShowBirthdayNotification(message);
+                }
+                else
+                {
+                    notificationItem.HideBirthdayNotification();
+                }
+            }
+        }
+
+        private void CheckUpcomingVacation()
+        {
+            using (var context = new VacationContext())
+            {
+                var upcomingVacation = context.Vacations.Where(v => v.EmployeeId == currentUser.EmployeeId && v.StartDate.Date >= DateTime.Today && v.StatusId == 2).OrderBy(v => v.StartDate).FirstOrDefault();
+
+                if (upcomingVacation != null)
+                {
+                    int daysLeft = (upcomingVacation.StartDate.Date - DateTime.Today).Days;
+
+                    if (daysLeft <= 14)
+                    {
+                        string message;
+                        message = $"• Ваш отпуск начнется через {daysLeft} {GetDayWord(daysLeft)} — {upcomingVacation.StartDate:dd.MM.yyyy}";
+                        notificationItem.ShowVacationNotification(message);
+                    }
+                    else
+                    {
+                        notificationItem.HideVacationNotification();
+                    }
+                }
+                else
+                {
+                    notificationItem.HideVacationNotification();
+                }
+            }
+        }
+
+        private string GetDayWord(int days)
+        {
+            if (days % 10 == 1 && days % 100 != 11)
+                return "день";
+            else if (days % 10 >= 2 && days % 10 <= 4 && (days % 100 < 10 || days % 100 >= 20))
+                return "дня";
+            else
+                return "дней";
         }
 
         private string GetEmployeeText(int count)

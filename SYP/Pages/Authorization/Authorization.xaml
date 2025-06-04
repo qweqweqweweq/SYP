@@ -36,7 +36,7 @@
                 <Label Content="Имя пользователя:" Height="30" FontSize="15" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="20,80,0,0"/>
                 <TextBox x:Name="UserName" Height="30" FontSize="15" VerticalAlignment="Top" Margin="20,110,20,0" Style="{StaticResource RoundedTextBox2}"/>
                 <Label Content="Пароль:" Height="30" FontSize="15" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="20,150,0,0"/>
-                <PasswordBox x:Name="PasswordText" Height="30" FontSize="15" VerticalAlignment="Top" Margin="20,180,20,0" Style="{StaticResource RoundedPasswordBox}"/>
+                <PasswordBox x:Name="PasswordText" Height="30" FontSize="15" VerticalAlignment="Top" Margin="20,180,20,0" Style="{StaticResource RoundedPasswordBox}" KeyDown="PasswordText_KeyDown"/>
                 <Button Click="SignIn" Content="Войти" Height="35" FontSize="15" VerticalAlignment="Top" HorizontalAlignment="Center" Margin="0,240,0,0" Width="150" Style="{StaticResource RoundedButton}"/>
                 <Label Content="Забыли пароль?" MouseDown="ForgotPassword" Foreground="#FF728EBB" Height="30" FontSize="15" VerticalAlignment="Top" HorizontalAlignment="Center" Margin="0,290,0,0" Style="{StaticResource HoverLabelStyleText}"/>
             </Grid>

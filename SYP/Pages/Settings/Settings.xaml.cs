@@ -1,5 +1,6 @@
 ﻿using SYP.Context;
 using SYP.Models;
+using SYP.Models.PasswHelp;
 using SYP.Pages.Employees;
 using System;
 using System.Collections.Generic;
@@ -127,13 +128,14 @@ namespace SYP.Pages
                         return;
                     }
 
-                    if (user.Password != oldPassword)
+                    string oldPasswordHash = PasswordHelper.ComputeSha256Hash(oldPassword);
+                    if (user.Password != oldPasswordHash)
                     {
                         MessageBox.Show("Неверный старый пароль.");
                         return;
                     }
 
-                    user.Password = newPassword;
+                    user.Password = PasswordHelper.ComputeSha256Hash(newPassword);
                     context.SaveChanges();
                     MessageBox.Show("Пароль успешно изменен.");
                 }

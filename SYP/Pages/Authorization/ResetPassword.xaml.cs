@@ -1,4 +1,5 @@
 ﻿using SYP.Context;
+using SYP.Models.PasswHelp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -60,7 +61,7 @@ namespace SYP.Pages.Authorization
                     var user = userContext.Users.FirstOrDefault(u => u.Id == userId.Value);
                     if (user != null)
                     {
-                        user.Password = newPassword;
+                        user.Password = PasswordHelper.ComputeSha256Hash(newPassword);
                         userContext.SaveChanges();
                         MessageBox.Show("Пароль успешно изменён.", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
                         MainWindow.mw.OpenPages(new Authorization());

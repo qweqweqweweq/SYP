@@ -43,7 +43,7 @@ namespace SYP.Pages.Positions
             MainWindow.mw.OpenPages(new Positions());
         }
 
-        private void Save(object sender, RoutedEventArgs e)
+        public void Save(object sender, RoutedEventArgs e)
         {
             try
             {
@@ -79,6 +79,18 @@ namespace SYP.Pages.Positions
             {
                 MessageBox.Show("Возникла ошибка.\n" + ex.Message);
             }
+        }
+
+        public string PositionNameText
+        {
+            get => NamePosition.Text;
+            set => NamePosition.Text = value;
+        }
+
+        public string SalaryText
+        {
+            get => Salary.Text;
+            set => Salary.Text = value;
         }
     }
 }

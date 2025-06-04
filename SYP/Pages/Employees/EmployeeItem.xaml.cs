@@ -47,16 +47,13 @@ namespace SYP.Pages.Employees
             lbPosition.Content = "Должность: " + positionContext.Positions.Where(x => x.Id == Employee.PositionId).FirstOrDefault().Name;
             lbDepartment.Content = "Отдел: " + departmentContext.Departments.Where(x => x.Id == Employee.DepartmentId).FirstOrDefault().Name;
 
-            var status = statusContext.Status.FirstOrDefault(x => x.Id == Employee.StatusId);
+            var status = statusContext.EmployeeStatus.FirstOrDefault(x => x.Id == Employee.StatusId);
             lbStatus.Content = status.Name;
 
             SetStatusColor(status.Name);
 
             var today = DateTime.Today;
-            var currentVac = vacationContext.Vacations
-                .FirstOrDefault(v => v.EmployeeId == Employee.Id
-                                  && v.StartDate <= today
-                                  && v.EndDate >= today);
+            var currentVac = vacationContext.Vacations.FirstOrDefault(v => v.EmployeeId == Employee.Id && v.StartDate.Date <= today && v.EndDate.Date >= today);
 
             if (currentVac != null)
             {
@@ -65,10 +62,7 @@ namespace SYP.Pages.Employees
             }
             else
             {
-                var lastVac = vacationContext.Vacations
-                    .Where(v => v.EmployeeId == Employee.Id)
-                    .OrderByDescending(v => v.EndDate)
-                    .FirstOrDefault();
+                var lastVac = vacationContext.Vacations.Where(v => v.EmployeeId == Employee.Id).OrderByDescending(v => v.EndDate).FirstOrDefault();
                 if (lastVac != null && today > lastVac.EndDate)
                 {
                     lbStatus.Content = "Активен";

@@ -32,7 +32,7 @@ namespace SYP.Pages.Authorization
             InitializeComponent();
         }
 
-        private void SendRecovery(object sender, RoutedEventArgs e)
+        private void SendRecovery(object sender, RoutedEventArgs e) 
         {
             string input = UserName.Text.Trim();
 

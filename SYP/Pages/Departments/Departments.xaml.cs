@@ -35,6 +35,11 @@ namespace SYP.Pages.Departments
                 settings.Visibility = Visibility.Hidden;
             }
 
+            LoadDepartments();
+        }
+
+        private void LoadDepartments()
+        {
             showDepartments.Children.Clear();
             foreach (Models.Departments item in DepartmentContext.Departments)
                 showDepartments.Children.Add(new Pages.Departments.DepartmentItem(this, item));

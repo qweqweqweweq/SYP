@@ -1,8 +1,12 @@
-﻿using SYP.Context;
+﻿using Newtonsoft.Json;
+using SYP.Context;
 using SYP.Models;
+using SYP.Models.Holiday;
+using SYP.Pages.Employees;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -30,6 +34,8 @@ namespace SYP.Pages.Vacations
         VacationTypeContext typeContext = new VacationTypeContext();
         VacationStatusContext statusContext = new VacationStatusContext();
 
+        private int remainingDays = 28;
+
         public VacationEdit(Vacations MainVacations, Models.Vacations vacations)
         {
             InitializeComponent();
@@ -45,6 +51,12 @@ namespace SYP.Pages.Vacations
 
             foreach (var item in statusContext.VacationStatus)
                 Status.Items.Add(item.Name);
+
+            Employee.SelectionChanged += Employee_SelectionChanged;
+            Employee.SelectionChanged -= Employee_SelectionChanged;
+
+            dateStart.SelectedDateChanged += Date_SelectedDateChanged;
+            dateEnd.SelectedDateChanged += Date_SelectedDateChanged;
 
             if (vacations != null)
             {
@@ -63,12 +75,108 @@ namespace SYP.Pages.Vacations
             }
         }
 
+        private int GetUsedVacationDaysForYear(Models.Employees employee, int year)
+        {
+            var approvedStatus = statusContext.VacationStatus.FirstOrDefault(s => s.Name == "Одобрено");
+            if (approvedStatus == null)
+                return 0;
+
+            int approvedStatusId = approvedStatus.Id;
+
+            return vacationContext.Vacations.Where(v => v.EmployeeId == employee.Id && v.StartDate.Year == year && v.StatusId == approvedStatusId).Sum(v => (v.EndDate - v.StartDate).Days + 1);
+        }
+
+        private int GetRemainingVacationDays(Models.Employees employee, int year, int totalDaysPerYear = 28)
+        {
+            var validStatuses = statusContext.VacationStatus.Where(s => s.Name == "Одобрено" || s.Name == "Завершён").Select(s => s.Id).ToList();
+
+            var vacations = vacationContext.Vacations
+                .Where(v => v.EmployeeId == employee.Id
+                            && v.StartDate.Year == year
+                            && validStatuses.Contains(v.StatusId))
+                .ToList();
+
+            int totalUsedDays = vacations.Sum(v => (v.EndDate - v.StartDate).Days + 1);
+
+            return totalDaysPerYear - totalUsedDays;
+        }
+
+        private void Employee_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            txtVacationDaysLeft.Visibility = Visibility.Visible;
+
+            if (Employee.SelectedItem != null)
+            {
+                var selectedFullName = Employee.SelectedItem.ToString();
+                var employee = employeeContext.Employees.FirstOrDefault(x =>
+                    (x.LastName + " " + x.FirstName + " " + x.Patronymic) == selectedFullName);
+
+                if (employee != null)
+                {
+                    if (!CanRequestVacation(employee))
+                    {
+                        Employee.SelectedIndex = -1;
+                        txtVacationDaysLeft.Visibility = Visibility.Collapsed;
+                        MessageBox.Show("У сотрудника не прошло 6 месяцев после трудоустройства. Отпуск пока невозможен.",
+                            "Отказ", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        return;
+                    }
+                    else
+                    {
+                        remainingDays = GetRemainingVacationDays(employee, DateTime.Now.Year);
+                        txtVacationDaysLeft.Text = $"Осталось дней отпуска: {remainingDays}";
+                    }
+                }
+                else
+                {
+                    txtVacationDaysLeft.Visibility = Visibility.Collapsed;
+                }
+            }
+            else
+            {
+                txtVacationDaysLeft.Visibility = Visibility.Collapsed;
+            }
+        }
+
+
         private void Cancel(object sender, RoutedEventArgs e)
         {
             MainWindow.mw.OpenPages(new Pages.Vacations.Vacations());
         }
 
-        private void Save(object sender, RoutedEventArgs e)
+        private bool IsDepartmentOnVacation(EmployeeContext employeeContext, VacationContext vacationContext, int employeeId, DateTime start, DateTime end, int? currentVacationId = null)
+        {
+            var employee = employeeContext.Employees.FirstOrDefault(e => e.Id == employeeId);
+            if (employee == null) return false;
+
+            var departmentEmployees = employeeContext.Employees.Where(e => e.DepartmentId == employee.DepartmentId).ToList();
+            if (departmentEmployees.Count == 0) return false;
+
+            var approvedStatus = statusContext.VacationStatus.FirstOrDefault(s => s.Name == "Одобрено");
+            if (approvedStatus == null) return false;
+
+            int approvedStatusId = approvedStatus.Id;
+
+            int countOnVacation = 0;
+            foreach (var deptEmp in departmentEmployees)
+            {
+                bool isOnVacation = vacationContext.Vacations.Any(v =>
+                    v.EmployeeId == deptEmp.Id &&
+                    v.StatusId == approvedStatusId &&
+                    v.Id != currentVacationId &&
+                    (
+                        (start >= v.StartDate && start <= v.EndDate) ||
+                        (end >= v.StartDate && end <= v.EndDate) ||
+                        (start <= v.StartDate && end >= v.EndDate)
+                    ));
+                if (isOnVacation)
+                    countOnVacation++;
+            }
+
+            return countOnVacation >= departmentEmployees.Count - 1;
+        }
+
+        private async void Save(object sender, RoutedEventArgs e)
         {
             try
             {
@@ -125,6 +233,37 @@ namespace SYP.Pages.Vacations
                     return;
                 }
 
+                if (IsDepartmentOnVacation(employeeContext, vacationContext, employee.Id, start, end, vacations?.Id))
+                {
+                    MessageBox.Show("Все сотрудники отдела уже находятся в отпуске в выбранный период. Невозможно оформить отпуск.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
+                int? currentVacationId = vacations?.Id;
+                bool hasOverlap = vacationContext.Vacations.Any(v => v.EmployeeId == employee.Id && v.Id != currentVacationId &&
+                    (
+                        (start >= v.StartDate && start <= v.EndDate) ||
+                        (end >= v.StartDate && end <= v.EndDate) ||
+                        (start <= v.StartDate && end >= v.EndDate)
+                    ));
+
+                if (hasOverlap)
+                {
+                    MessageBox.Show("У сотрудника уже есть отпуск в указанный период.");
+                    return;
+                }
+
+                int totalDays = (end - start).Days + 1;
+int holidayCount = await GetHolidayCountInRange(start, end);
+int vacationDaysWithoutHolidays = totalDays - holidayCount;
+
+if (vacationDaysWithoutHolidays > remainingDays)
+{
+    MessageBox.Show("Количество рабочих дней отпуска превышает остаток дней!", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+    return;
+}
+
+
                 if (vacations == null)
                 {
                     vacations = new Models.Vacations()
@@ -153,6 +292,94 @@ namespace SYP.Pages.Vacations
             catch (Exception ex)
             {
                 MessageBox.Show("Возникла ошибка при сохранении отпуска.\n" + ex.Message);
+            }
+        }
+
+        private bool CanRequestVacation(Models.Employees employee)
+        {
+            return DateTime.Now >= employee.HireDate.AddMonths(6);
+        }
+
+        public async Task<int> GetHolidayCountInRange(DateTime start, DateTime end)
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                var response = await client.GetAsync($"https://calendar.kuzyak.in/api/calendar/{start.Year}/holidays");
+                if (response.IsSuccessStatusCode)
+                {
+                    var json = await response.Content.ReadAsStringAsync();
+                    var calendarData = JsonConvert.DeserializeObject<CalendarData>(json);
+
+                    if (calendarData?.Holidays == null)
+                        return 0;
+
+                    return calendarData.Holidays.Count(h => h.Date >= start && h.Date <= end);
+                }
+            }
+            return 0;
+        }
+
+        private async void Date_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (dateEnd.SelectedDate.HasValue)
+            {
+                txtVacationDaysCount.Visibility = Visibility.Visible;
+            }
+
+            if (dateStart.SelectedDate.HasValue)
+            {
+                dateEnd.DisplayDateStart = dateStart.SelectedDate;
+                if (dateEnd.SelectedDate < dateStart.SelectedDate)
+                {
+                    dateEnd.SelectedDate = dateStart.SelectedDate;
+                }
+            }
+            else
+            {
+                dateEnd.DisplayDateStart = null;
+            }
+
+            if (dateStart.SelectedDate.HasValue && dateEnd.SelectedDate.HasValue)
+            {
+                DateTime start = dateStart.SelectedDate.Value;
+                DateTime end = dateEnd.SelectedDate.Value;
+
+                if (end >= start)
+                {
+                    int vacationDays = (end - start).Days + 1;
+
+                    var holidays = await HolidayService.GetUpcomingHolidaysAsync();
+                    var holidayDatesInRange = holidays
+                        .Where(h => h.Date >= start && h.Date <= end)
+                        .Select(h => h.Date)
+                        .Distinct()
+                        .ToList();
+
+                    int holidayCount = holidayDatesInRange.Count;
+                    int vacationDaysWithoutHolidays = vacationDays - holidayCount;
+
+                    string vacationText = $"Количество дней отпуска: {vacationDaysWithoutHolidays}";
+                    if (holidayCount > 0)
+                        vacationText += $" (без учёта {holidayCount} праздничных дней)";
+
+                    txtVacationDaysCount.Text = vacationText;
+                    txtVacationDaysCount.Visibility = Visibility.Visible;
+
+                    if (Employee.SelectedItem != null && vacationDaysWithoutHolidays > remainingDays)
+                    {
+                        txtVacationDaysCount.Text += " (превышен лимит!)";
+                        txtVacationDaysCount.Foreground = Brushes.Red;
+                    }
+                    else
+                    {
+                        txtVacationDaysCount.Foreground = Brushes.Black;
+                    }
+                }
+            }
+            else
+            {
+                txtVacationDaysCount.Visibility = Visibility.Collapsed;
+                txtVacationDaysCount.Foreground = Brushes.Black;
             }
         }
     }

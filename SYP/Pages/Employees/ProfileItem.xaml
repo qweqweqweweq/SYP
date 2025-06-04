@@ -26,7 +26,7 @@
                 <Label x:Name="status" Content="Статус:" Height="30" FontSize="15" VerticalAlignment="Top"/>
             </StackPanel>
             <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom" HorizontalAlignment="Right" Grid.ColumnSpan="2" Margin="20">
-                <Button x:Name="newUser" Visibility="Collapsed" Content="Получить логин и пароль" Click="NewUserButton" Height="30" FontSize="15" Width="230" Margin="0,0,10,0" Style="{StaticResource CancelButtonStyle}"/>
+                <Button x:Name="newUser" Visibility="Collapsed" Content="Создать логин и пароль" Click="NewUserButton" Height="30" FontSize="15" Width="230" Margin="0,0,10,0" Style="{StaticResource CancelButtonStyle}"/>
                 <Button Content="Закрыть" Click="Close" Height="30" FontSize="15" Width="100" Style="{StaticResource CancelButtonStyle}"/>
             </StackPanel>
         </Grid>

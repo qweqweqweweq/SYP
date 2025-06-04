@@ -34,7 +34,7 @@ namespace SYP.Pages.Employees
 
             foreach (var item in DepartmentContext.Departments) Department.Items.Add(item.Name);
             foreach (var item in PositionContext.Positions) Position.Items.Add(item.Name);
-            foreach (var item in StatusContext.Status) Status.Items.Add(item.Name);
+            foreach (var item in StatusContext.EmployeeStatus) Status.Items.Add(item.Name);
         }
 
         private void LoadEmployees()
@@ -49,8 +49,8 @@ namespace SYP.Pages.Employees
         private void UpdateEmployeeStatuses()
         {
             var today = DateTime.Today;
-            int activeId = StatusContext.Status.First(s => s.Name == "Активен").Id;
-            int onVacationId = StatusContext.Status.First(s => s.Name == "В отпуске").Id;
+            int activeId = StatusContext.EmployeeStatus.First(s => s.Name == "Активен").Id;
+            int onVacationId = StatusContext.EmployeeStatus.First(s => s.Name == "В отпуске").Id;
 
             foreach (var emp in EmployeeContext.Employees)
             {
@@ -116,7 +116,7 @@ namespace SYP.Pages.Employees
             }
 
             string selectedStatusName = Status.SelectedItem.ToString();
-            var selectedStatus = StatusContext.Status.FirstOrDefault(s => s.Name == selectedStatusName);
+            var selectedStatus = StatusContext.EmployeeStatus.FirstOrDefault(s => s.Name == selectedStatusName);
 
             if (selectedStatus != null)
             {

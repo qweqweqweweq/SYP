@@ -29,13 +29,29 @@
                 </Grid.RowDefinitions>
 
                 <Label Content="Сотрудник:" FontSize="15" Grid.Row="0" Grid.Column="0" Foreground="#202a45"/>
-                <Label Content="Иванов Иван Иванович" x:Name="Employee" Grid.Column="1" Height="30" FontSize="15"/>
+                <Grid Grid.Row="0" Grid.Column="1">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <Label Content="Иванов Иван Иванович" x:Name="Employee" Height="30" FontSize="15"/>
+                    <TextBlock x:Name="txtRemainingDays" Padding="5,0,5,0" FontSize="13" VerticalAlignment="Center" Grid.Row="1" Margin="0,0,0,10"/>
+                </Grid>
 
                 <Label Content="Дата начала отпуска:" FontSize="15" Grid.Row="1" Grid.Column="0" Margin="0,6" Foreground="#202a45"/>
-                <DatePicker x:Name="dateStart" Grid.Row="1" Grid.Column="1" Height="30" FontSize="15" VerticalContentAlignment="Center" Style="{DynamicResource DatePickerStyle1}"/>
+                <DatePicker x:Name="dateStart" Grid.Row="1" Grid.Column="1" Height="30" FontSize="15" VerticalContentAlignment="Center" Style="{DynamicResource DatePickerStyle1}" SelectedDateChanged="Date_SelectedDateChanged"/>
 
-                <Label Content="Дата окончания отпуска:" FontSize="15" Grid.Row="2" Grid.Column="0" Margin="0,6" Foreground="#202a45"/>
-                <DatePicker x:Name="dateEnd" Grid.Row="2" Grid.Column="1" Height="30" FontSize="15" VerticalContentAlignment="Center" Style="{DynamicResource DatePickerStyle1}"/>
+                <Label Content="Дата окончания отпуска:" FontSize="15" Grid.Row="2" Grid.Column="0" Foreground="#202a45"/>
+                <Grid Grid.Row="2" Grid.Column="1">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <DatePicker x:Name="dateEnd" Height="30" FontSize="15" VerticalContentAlignment="Center" Style="{DynamicResource DatePickerStyle1}" SelectedDateChanged="Date_SelectedDateChanged"/>
+                    <TextBlock x:Name="txtVacationDaysCount" Padding="5,0,5,0" Visibility="Collapsed" FontSize="13" VerticalAlignment="Center"  Grid.Row="1"/>
+                </Grid>
 
                 <Label Content="Тип:" Grid.Row="3" FontSize="15" Grid.Column="0" Margin="0,6" Foreground="#202a45"/>
                 <ComboBox x:Name="Type" Grid.Row="3" Grid.Column="1" Height="30" FontSize="15" Style="{DynamicResource ComboBoxStyleEdited}"/>
@@ -43,7 +59,7 @@
         </Border>
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,20,20">
             <Button Click="Cancel" Content="Отмена" Style="{StaticResource CancelButtonStyle}" Margin="0,0,10,0"/>
-            <Button Click="SendRequest" Content="Отправить заявку" Style="{StaticResource EditButtonStyle}" Width="150"/>
+            <Button x:Name="sendRequest" Click="SendRequest" Content="Отправить заявку" Style="{StaticResource EditButtonStyle}" Width="150"/>
         </StackPanel>
     </Grid>
 </Page>

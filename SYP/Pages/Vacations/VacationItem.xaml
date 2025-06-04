@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:SYP.Pages.Vacations"
              xmlns:fa="http://schemas.fontawesome.io/icons/"
              mc:Ignorable="d" FontFamily="/Fonts/#Montserrat">
-    <Border x:Name="border" CornerRadius="10" Background="White" Margin="10,10,10,5" Effect="{DynamicResource ShadowEffect}">
+    <Border x:Name="border" CornerRadius="10" Background="White" Margin="10,5,10,5" Effect="{DynamicResource ShadowEffect}">
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>

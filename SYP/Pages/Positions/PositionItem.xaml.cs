@@ -39,10 +39,11 @@ namespace SYP.Pages.Positions
             {
                 Edit.Visibility = Visibility.Visible;
                 Delete.Visibility = Visibility.Visible;
+                lbSalary.Visibility = Visibility.Visible;
             }
 
             lbName.Content = Position.Name;
-            lbSalary.Content = Position.Salary + "₽";
+            lbSalary.Content = "Зарплата: " + Position.Salary + "₽";
         }
 
         private void EditClick(object sender, MouseButtonEventArgs e)

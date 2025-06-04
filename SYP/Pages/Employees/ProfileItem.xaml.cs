@@ -1,8 +1,11 @@
 ﻿using SYP.Context;
 using SYP.Models;
+using SYP.Models.PasswHelp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Mail;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -55,11 +58,11 @@ namespace SYP.Pages.Employees
             dateHire.Content = "Дата поступления: " + employees.HireDate.ToString("dd.MM.yyyy");
             email.Content = "Эл. почта: " + employees.Email;
             phone.Content = "Номер телефона: " + employees.PhoneNumber;
-            status.Content = "Статус: " + statusContext.Status.FirstOrDefault(x => x.Id == employees.StatusId).Name;
+            status.Content = "Статус: " + statusContext.EmployeeStatus.FirstOrDefault(x => x.Id == employees.StatusId).Name;
 
             currentUser = MainWindow.mw.CurrentUser;
             var user = userContext.Users.FirstOrDefault(u => u.EmployeeId == employees.Id);
-            var statusName = statusContext.Status.FirstOrDefault(s => s.Id == employees.StatusId)?.Name;
+            var statusName = statusContext.EmployeeStatus.FirstOrDefault(s => s.Id == employees.StatusId)?.Name;
 
             bool shouldShowButton = currentUser != null &&
                            currentUser.Role == "Admin" &&
@@ -141,23 +144,79 @@ namespace SYP.Pages.Employees
 
         private void NewUserButton(object sender, RoutedEventArgs e)
         {
-            string username = GenerateUsername(employee);
-            string password = GeneratePassword();
-
-            var newUsers = new Users
+            try
             {
-                Username = username,
-                Password = password,
-                Role = "User",
-                EmployeeId = employee.Id
-            };
+                string username = GenerateUsername(employee);
+                string password = GeneratePassword();
 
-            userContext.Users.Add(newUsers);
-            userContext.SaveChanges();
+                var newUsers = new Users
+                {
+                    Username = username,
+                    Password = PasswordHelper.ComputeSha256Hash(password),
+                    Role = "User",
+                    EmployeeId = employee.Id
+                };
 
-            MessageBox.Show($"Имя пользователя: {username}\nПароль: {password}", "Данные нового пользователя", MessageBoxButton.OK, MessageBoxImage.Information);
+                userContext.Users.Add(newUsers);
+                userContext.SaveChanges();
 
-            newUser.Visibility = Visibility.Hidden;
+                try
+                {
+                    SendEmail(employee.Email, username, password);
+                    MessageBox.Show("Сообщение с данными для входа отправлено на почту сотрудника.", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+                catch (Exception exEmail)
+                {
+                    MessageBox.Show($"Пользователь создан, но не удалось отправить письмо: {exEmail.Message}\n\n" + $"Имя пользователя: {username}\nПароль: {password}", "Ошибка отправки письма", MessageBoxButton.OK, MessageBoxImage.Warning);
+                }
+
+                newUser.Visibility = Visibility.Collapsed;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка при создании пользователя: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private void SendEmail(string toEmail, string username, string password)
+        {
+            try
+            {
+
+                var fromAddress = new MailAddress("pleshkovaanastas@yandex.ru", "SotrudniK");
+                var toAddress = new MailAddress(toEmail);
+                const string fromPassword = "enrklmiqltflflhx";
+                const string subject = "Данные для входа в систему";
+                string body = $"Здравствуйте, {employee.FirstName}!\n\n" +
+                              $"Ваши данные для входа:\n" +
+                              $"Имя пользователя: {username}\n" +
+                              $"Пароль: {password}\n\n" +
+                              $"Пожалуйста, сохраните эти данные.";
+
+                var smtp = new SmtpClient
+                {
+                    Host = "smtp.yandex.ru",
+                    Port = 587,
+                    EnableSsl = true,
+                    DeliveryMethod = SmtpDeliveryMethod.Network,
+                    UseDefaultCredentials = false,
+                    Credentials = new NetworkCredential(fromAddress.Address, fromPassword),
+                    Timeout = 20000
+                };
+
+                using (var message = new MailMessage(fromAddress, toAddress)
+                {
+                    Subject = subject,
+                    Body = body
+                })
+                {
+                    smtp.Send(message);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Не удалось отправить письмо: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
     }
 }
