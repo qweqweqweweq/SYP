@@ -1,4 +1,6 @@
-﻿using System.Windows;
+﻿using SYP.Models.Calendar;
+using SYP.Models.Holiday;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 
@@ -54,5 +56,6 @@ namespace SYP
             if (e.ChangedButton == MouseButton.Left)
                 DragMove();
         }
+
     }
 }

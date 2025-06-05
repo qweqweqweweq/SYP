@@ -11,11 +11,16 @@ namespace SYP.Models.Calendar
 {
     public class DayOfWeekBrush : IValueConverter
     {
-        public Brush HolidayBrush { get; set; } = Brushes.OrangeRed;
+        public Brush HolidayBrush { get; set; } = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#f6d6d6"));
         public Brush WeekendBrush { get; set; } = Brushes.LightCoral;
         public Brush DefaultBrush { get; set; } = Brushes.Transparent;
 
-        public List<DateTime> Holidays { get; set; } = new();
+        private HashSet<DateTime> Holidays { get; set; } = new();
+
+        public void SetHolidays(IEnumerable<DateTime> holidayDates)
+        {
+            Holidays = new HashSet<DateTime>(holidayDates.Select(d => d.Date));
+        }
 
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {

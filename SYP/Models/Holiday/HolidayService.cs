@@ -22,11 +22,7 @@ namespace SYP.Models.Holiday
                     var json = await response.Content.ReadAsStringAsync();
                     var calendarData = JsonConvert.DeserializeObject<CalendarData>(json);
 
-                    var holidays = calendarData?.Holidays
-                        .Where(h => h.Date >= DateTime.Now)
-                        .OrderBy(h => h.Date)
-                        .Take(3)
-                        .ToList();
+                    var holidays = calendarData?.Holidays;
 
                     foreach (var holiday in holidays)
                     {

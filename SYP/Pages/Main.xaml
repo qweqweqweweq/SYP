@@ -95,7 +95,7 @@
                     </Grid>
                 </Border>
                 <Viewbox Stretch="Uniform" VerticalAlignment="Center" Grid.Column="1" Effect="{DynamicResource ShadowEffect}" Margin="10">
-                    <Calendar Style="{StaticResource RoundedCalendarStyle}"/>
+                    <Calendar DisplayDateChanged="Calendar_DisplayDateChanged" Style="{StaticResource RoundedCalendarStyle}"/>
                 </Viewbox>
 
                 <Border Grid.Column="1" Grid.Row="1" Background="White" CornerRadius="10" Padding="10" VerticalAlignment="Top" Margin="10,0,10,0" Effect="{DynamicResource ShadowEffect}">

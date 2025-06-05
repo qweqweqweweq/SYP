@@ -1,0 +1,32 @@
+﻿<Window x:Class="SYP.DateRangeDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:SYP"
+        mc:Ignorable="d"
+        Title="DateRangeDialog" Height="330" Width="350" WindowStartupLocation="CenterScreen" FontFamily="/Fonts/#Montserrat" ResizeMode="NoResize" WindowStyle="None" AllowsTransparency="True">
+    <Grid Margin="20">
+        <Label Content="Выберите диапазон дат" Height="30" FontSize="15" VerticalAlignment="Top" HorizontalAlignment="Center"/>
+        <Label Content="для экспорта:" Height="30" FontSize="15" VerticalAlignment="Top" HorizontalAlignment="Center" Margin="0,23,0,0"/>
+        <StackPanel Orientation="Horizontal" VerticalAlignment="Top" Margin="0,60,0,0" HorizontalAlignment="Center">
+            <TextBlock Text="С:" Width="30" VerticalAlignment="Center" FontSize="15"/>
+            <DatePicker x:Name="StartDatePicker" SelectedDate="{Binding StartDate}" Style="{DynamicResource DatePickerStyle1}" FontSize="15" VerticalContentAlignment="Center" Width="200" Height="30"/>
+        </StackPanel>
+
+        <StackPanel Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Center" Margin="0,100,0,0">
+            <TextBlock Text="По:" Width="30" VerticalAlignment="Center" FontSize="15"/>
+            <DatePicker x:Name="EndDatePicker" SelectedDate="{Binding EndDate}" FontSize="15" Style="{DynamicResource DatePickerStyle1}" VerticalContentAlignment="Center" Width="200" Height="30"/>
+        </StackPanel>
+
+        <Label Content="Тип формата документа:" Height="30" FontSize="15" VerticalAlignment="Top" HorizontalAlignment="Center" Margin="0,150,0,0"/>
+
+        <StackPanel Orientation="Horizontal" VerticalAlignment="Top" HorizontalAlignment="Center" Margin="0,185,0,0">
+            <RadioButton x:Name="savePDF" Content="PDF" FontSize="15" Margin="0,0,8,0"/>
+            <RadioButton x:Name="saveExcel" Content="Excel" FontSize="15"/>
+        </StackPanel>
+
+        <Button Content="OK" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="0 0 110 0" Style="{StaticResource EditButtonStyle}" Click="Ok_Click"/>
+        <Button Content="Отмена" VerticalAlignment="Bottom" HorizontalAlignment="Right" Style="{StaticResource CancelButtonStyle}" Click="Cancel_Click"/>
+    </Grid>
+</Window>

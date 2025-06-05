@@ -235,43 +235,52 @@ namespace SYP.Pages.Vacations
         {
             try
             {
+                var dateDialog = new DateRangeDialog();
+                if (dateDialog.ShowDialog() != true)
+                    return;
+
+                DateTime startDate = dateDialog.StartDate.Value;
+                DateTime endDate = dateDialog.EndDate.Value;
+                string format = dateDialog.SelectedFormat;
+
                 var vacations = VacationContext.Vacations
+                    .Where(v => v.StartDate <= endDate && v.EndDate >= startDate)
                     .OrderBy(v => v.StartDate)
                     .ToList();
 
                 if (vacations.Count == 0)
                 {
-                    MessageBox.Show("Нет данных для экспорта.", "Экспорт", MessageBoxButton.OK, MessageBoxImage.Information);
+                    MessageBox.Show("Нет данных для экспорта в выбранном диапазоне.", "Экспорт", MessageBoxButton.OK, MessageBoxImage.Information);
                     return;
                 }
 
-                var formatResult = MessageBox.Show(
-                    "Выберите формат экспорта:\n\nДа — PDF\nНет — Excel\nОтмена — отмена операции",
-                    "Выбор формата",
-                    MessageBoxButton.YesNoCancel,
-                    MessageBoxImage.Question);
+                var defaultFileName = $"Vacations_{startDate:yyyyMMdd}_{endDate:yyyyMMdd}";
 
-                if (formatResult == MessageBoxResult.Cancel)
-                    return;
+                var saveDialog = new Microsoft.Win32.SaveFileDialog();
 
-                bool exportToPdf = formatResult == MessageBoxResult.Yes;
-                bool exportToExcel = formatResult == MessageBoxResult.No;
-
-                using (var dialog = new System.Windows.Forms.FolderBrowserDialog())
+                if (format == "PDF")
                 {
-                    var result = dialog.ShowDialog();
-                    if (result != System.Windows.Forms.DialogResult.OK || string.IsNullOrWhiteSpace(dialog.SelectedPath))
-                        return;
-
-                    string folderPath = dialog.SelectedPath;
-
-                    if (exportToPdf)
-                        ExportToPdf(vacations, folderPath);
-                    else if (exportToExcel)
-                        ExportToExcel(vacations, folderPath);
-
-                    MessageBox.Show("Экспорт выполнен успешно!", "Экспорт", MessageBoxButton.OK, MessageBoxImage.Information);
+                    saveDialog.FileName = defaultFileName;
+                    saveDialog.Filter = "PDF files (*.pdf)|*.pdf";
                 }
+                else if (format == "Excel")
+                {
+                    saveDialog.FileName = defaultFileName;
+                    saveDialog.Filter = "Excel files (*.xlsx)|*.xlsx";
+                }
+
+                bool? saveResult = saveDialog.ShowDialog();
+                if (saveResult != true)
+                    return;
+
+                string filePath = saveDialog.FileName;
+
+                if (format == "PDF")
+                    ExportToPdf(vacations, filePath, startDate, endDate);
+                else if (format == "Excel")
+                    ExportToExcel(vacations, filePath, startDate, endDate);
+
+                MessageBox.Show("Экспорт выполнен успешно!", "Экспорт", MessageBoxButton.OK, MessageBoxImage.Information);
             }
             catch (Exception ex)
             {
@@ -279,67 +288,86 @@ namespace SYP.Pages.Vacations
             }
         }
 
-        private void ExportToExcel(List<Models.Vacations> vacations, string folderPath)
+        private void ExportToExcel(List<Models.Vacations> vacations, string filePath, DateTime startDate, DateTime endDate)
         {
             var wb = new XLWorkbook();
             var ws = wb.Worksheets.Add("Отпуска");
 
-            ws.Cell(1, 1).Value = "Сотрудник";
-            ws.Cell(1, 2).Value = "Дата начала";
-            ws.Cell(1, 3).Value = "Дата окончания";
-            ws.Cell(1, 4).Value = "Тип отпуска";
-            ws.Cell(1, 5).Value = "Статус";
+            ws.Cell(1, 1).Value = $"Отпуска за период: {startDate:dd.MM.yyyy} — {endDate:dd.MM.yyyy}";
+            ws.Range(1, 1, 1, 6).Merge().Style.Font.Bold = true;
+            ws.Range(1, 1, 1, 6).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+
+            ws.Cell(2, 1).Value = $"Дата формирования: {DateTime.Now:dd.MM.yyyy HH:mm}";
+            ws.Range(2, 1, 2, 6).Merge().Style.Font.Italic = true;
+            ws.Range(2, 1, 2, 6).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Right;
+
+            ws.Cell(3, 1).Value = "Сотрудник";
+            ws.Cell(3, 2).Value = "Дата начала";
+            ws.Cell(3, 3).Value = "Дата окончания";
+            ws.Cell(3, 4).Value = "Кол-во дней";
+            ws.Cell(3, 5).Value = "Тип отпуска";
+            ws.Cell(3, 6).Value = "Статус";
 
             for (int i = 0; i < vacations.Count; i++)
             {
                 var vac = vacations[i];
                 var employee = employeeContext.Employees.FirstOrDefault(e => e.Id == vac.EmployeeId);
                 var type = typeContext.VacationTypes.FirstOrDefault(t => t.Id == vac.TypeId);
-                var status = new VacationStatusContext().VacationStatus.FirstOrDefault(s => s.Id == vac.StatusId);
+                var status = statusContext.VacationStatus.FirstOrDefault(s => s.Id == vac.StatusId);
 
-                ws.Cell(i + 2, 1).Value = employee != null ? $"{employee.LastName} {employee.FirstName} {employee.Patronymic}" : "Не найден";
-                ws.Cell(i + 2, 2).Value = vac.StartDate.ToString("dd.MM.yyyy");
-                ws.Cell(i + 2, 3).Value = vac.EndDate.ToString("dd.MM.yyyy");
-                ws.Cell(i + 2, 4).Value = type != null ? type.Name : "";
-                ws.Cell(i + 2, 5).Value = status != null ? status.Name : "";
+                ws.Cell(i + 4, 1).Value = employee != null ? $"{employee.LastName} {employee.FirstName} {employee.Patronymic}" : "Не найден";
+                ws.Cell(i + 4, 2).Value = vac.StartDate.ToString("dd.MM.yyyy");
+                ws.Cell(i + 4, 3).Value = vac.EndDate.ToString("dd.MM.yyyy");
+                ws.Cell(i + 4, 4).Value = (vac.EndDate - vac.StartDate).Days + 1;
+                ws.Cell(i + 4, 5).Value = type?.Name ?? "";
+                ws.Cell(i + 4, 6).Value = status?.Name ?? "";
             }
 
             ws.Columns().AdjustToContents();
 
-            string filePath = System.IO.Path.Combine(folderPath, $"Vacations_{DateTime.Now:yyyyMMdd_HHmmss}.xlsx");
+            var lastRow = vacations.Count + 3;
+            var dataRange = ws.Range(1, 1, lastRow, 6);
+            dataRange.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+            dataRange.Style.Border.InsideBorder = XLBorderStyleValues.Thin;
+
             wb.SaveAs(filePath);
         }
 
-        private void ExportToPdf(List<Models.Vacations> vacations, string folderPath)
+        private void ExportToPdf(List<Models.Vacations> vacations, string filePath, DateTime periodStart, DateTime periodEnd)
         {
-            MigraDocDocument document = new MigraDocDocument();
-            MigraDocSection section = document.AddSection();
+            var document = new MigraDocDocument();
+            var section = document.AddSection();
 
             var title = section.AddParagraph("Список отпусков");
             title.Format.Font.Size = 16;
             title.Format.Font.Bold = true;
             title.Format.Alignment = ParagraphAlignment.Center;
-            title.Format.SpaceAfter = "1cm";
+            title.Format.SpaceAfter = "0.5cm";
+
+            var periodInfo = section.AddParagraph($"Отпуска за период: {periodStart:dd.MM.yyyy} по {periodEnd:dd.MM.yyyy}");
+            periodInfo.Format.Font.Size = 12;
+            periodInfo.Format.Font.Italic = true;
+            periodInfo.Format.SpaceAfter = "1cm";
+            periodInfo.Format.Alignment = ParagraphAlignment.Center;
 
             var table = section.AddTable();
             table.Borders.Width = 0.75;
 
-            var columns = new[]
-            {
-                table.AddColumn(Unit.FromCentimeter(3)),
-                table.AddColumn(Unit.FromCentimeter(3)),
-                table.AddColumn(Unit.FromCentimeter(3)),
-                table.AddColumn(Unit.FromCentimeter(3)),
-                table.AddColumn(Unit.FromCentimeter(3)),
-            };
+            table.AddColumn(Unit.FromCentimeter(4));
+            table.AddColumn(Unit.FromCentimeter(3));
+            table.AddColumn(Unit.FromCentimeter(3));
+            table.AddColumn(Unit.FromCentimeter(2.5));
+            table.AddColumn(Unit.FromCentimeter(3));
+            table.AddColumn(Unit.FromCentimeter(3));
 
             var headerRow = table.AddRow();
             headerRow.Shading.Color = MigraDoc.DocumentObjectModel.Colors.LightGray;
             headerRow.Cells[0].AddParagraph("Сотрудник");
             headerRow.Cells[1].AddParagraph("Начало отпуска");
             headerRow.Cells[2].AddParagraph("Конец отпуска");
-            headerRow.Cells[3].AddParagraph("Тип");
-            headerRow.Cells[4].AddParagraph("Статус");
+            headerRow.Cells[3].AddParagraph("Кол-во дней");
+            headerRow.Cells[4].AddParagraph("Тип");
+            headerRow.Cells[5].AddParagraph("Статус");
 
             foreach (var vac in vacations)
             {
@@ -348,26 +376,23 @@ namespace SYP.Pages.Vacations
                 var statusName = statusContext.VacationStatus.FirstOrDefault(x => x.Id == vac.StatusId)?.Name ?? "";
 
                 var row = table.AddRow();
-                row.Cells[0].AddParagraph($"{employee.LastName} {employee.FirstName} {employee.Patronymic}");
+                row.Cells[0].AddParagraph($"{employee?.LastName} {employee?.FirstName} {employee?.Patronymic}");
                 row.Cells[1].AddParagraph(vac.StartDate.ToString("dd.MM.yyyy"));
                 row.Cells[2].AddParagraph(vac.EndDate.ToString("dd.MM.yyyy"));
-                row.Cells[3].AddParagraph(typeName);
-                row.Cells[4].AddParagraph(statusName);
+                row.Cells[3].AddParagraph($"{(vac.EndDate - vac.StartDate).Days + 1}");
+                row.Cells[4].AddParagraph(typeName);
+                row.Cells[5].AddParagraph(statusName);
             }
 
             var footer = section.AddParagraph();
             footer.Format.SpaceBefore = "1cm";
             footer.Format.Alignment = ParagraphAlignment.Right;
-            footer.AddFormattedText($"Дата создания: {DateTime.Now:dd.MM.yyyy}", TextFormat.Italic);
+            footer.AddFormattedText($"Дата формирования документа: {DateTime.Now:dd.MM.yyyy}", TextFormat.Italic);
 
-            PdfDocumentRenderer pdfRenderer = new PdfDocumentRenderer(true)
-            {
-                Document = document
-            };
+            var pdfRenderer = new PdfDocumentRenderer(true) { Document = document };
             pdfRenderer.RenderDocument();
 
-            string filename = System.IO.Path.Combine(folderPath, "VacationsExport.pdf");
-            pdfRenderer.PdfDocument.Save(filename);
+            pdfRenderer.PdfDocument.Save(filePath);
         }
     }
 }

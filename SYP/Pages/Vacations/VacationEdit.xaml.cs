@@ -34,7 +34,9 @@ namespace SYP.Pages.Vacations
         VacationTypeContext typeContext = new VacationTypeContext();
         VacationStatusContext statusContext = new VacationStatusContext();
 
-        private int remainingDays = 28;
+        private int remainingDays = 0;
+        private int usedDays = 0;
+        private double accruedDays = 0;
 
         public VacationEdit(Vacations MainVacations, Models.Vacations vacations)
         {
@@ -121,11 +123,23 @@ namespace SYP.Pages.Vacations
                             "Отказ", MessageBoxButton.OK, MessageBoxImage.Warning);
                         return;
                     }
-                    else
-                    {
-                        remainingDays = GetRemainingVacationDays(employee, DateTime.Now.Year);
-                        txtVacationDaysLeft.Text = $"Осталось дней отпуска: {remainingDays}";
-                    }
+
+                    var hireDate = employee.HireDate;
+                    var today = DateTime.Today;
+                    int monthsWorked = ((today.Year - hireDate.Year) * 12) + today.Month - hireDate.Month;
+                    monthsWorked = Math.Max(0, monthsWorked);
+
+                    accruedDays = Math.Round((monthsWorked / 12.0) * 28, 1);
+
+                    var currentYear = DateTime.Now.Year;
+                    usedDays = vacationContext.Vacations
+                        .Where(v => v.EmployeeId == employee.Id && v.StatusId == 2 && v.StartDate.Year == currentYear)
+                        .AsEnumerable()
+                        .Sum(v => (v.EndDate - v.StartDate).Days + 1);
+
+                    remainingDays = (int)Math.Floor(accruedDays - usedDays);
+
+                    txtVacationDaysLeft.Text = $"Осталось дней отпуска: {remainingDays}";
                 }
                 else
                 {
@@ -254,14 +268,16 @@ namespace SYP.Pages.Vacations
                 }
 
                 int totalDays = (end - start).Days + 1;
-int holidayCount = await GetHolidayCountInRange(start, end);
-int vacationDaysWithoutHolidays = totalDays - holidayCount;
+                int holidayCount = await GetHolidayCountInRange(start, end);
+                int vacationDaysWithoutHolidays = totalDays - holidayCount;
 
-if (vacationDaysWithoutHolidays > remainingDays)
-{
-    MessageBox.Show("Количество рабочих дней отпуска превышает остаток дней!", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
-    return;
-}
+                var noCountTypes = new[] { "Дополнительный", "Без сохранения з/п", "Учебный" };
+
+                if (!noCountTypes.Contains(vacationType.Name) && vacationDaysWithoutHolidays > remainingDays)
+                {
+                    MessageBox.Show("Количество рабочих дней отпуска превышает остаток дней!", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
 
 
                 if (vacations == null)
@@ -321,15 +337,11 @@ if (vacationDaysWithoutHolidays > remainingDays)
 
         private async void Date_SelectedDateChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (dateEnd.SelectedDate.HasValue)
-            {
-                txtVacationDaysCount.Visibility = Visibility.Visible;
-            }
-
             if (dateStart.SelectedDate.HasValue)
             {
                 dateEnd.DisplayDateStart = dateStart.SelectedDate;
-                if (dateEnd.SelectedDate < dateStart.SelectedDate)
+
+                if (dateEnd.SelectedDate.HasValue && dateEnd.SelectedDate < dateStart.SelectedDate)
                 {
                     dateEnd.SelectedDate = dateStart.SelectedDate;
                 }
@@ -344,36 +356,55 @@ if (vacationDaysWithoutHolidays > remainingDays)
                 DateTime start = dateStart.SelectedDate.Value;
                 DateTime end = dateEnd.SelectedDate.Value;
 
-                if (end >= start)
+                if (end < start)
                 {
-                    int vacationDays = (end - start).Days + 1;
+                    txtVacationDaysCount.Visibility = Visibility.Collapsed;
+                    return;
+                }
 
-                    var holidays = await HolidayService.GetUpcomingHolidaysAsync();
-                    var holidayDatesInRange = holidays
-                        .Where(h => h.Date >= start && h.Date <= end)
-                        .Select(h => h.Date)
-                        .Distinct()
-                        .ToList();
+                int vacationDays = (end - start).Days + 1;
 
-                    int holidayCount = holidayDatesInRange.Count;
-                    int vacationDaysWithoutHolidays = vacationDays - holidayCount;
+                var holidays = await HolidayService.GetUpcomingHolidaysAsync();
+                var holidayDatesInRange = holidays
+                    .Where(h => h.Date >= start && h.Date <= end)
+                    .Select(h => h.Date)
+                    .Distinct()
+                    .ToList();
 
-                    string vacationText = $"Количество дней отпуска: {vacationDaysWithoutHolidays}";
-                    if (holidayCount > 0)
-                        vacationText += $" (без учёта {holidayCount} праздничных дней)";
+                int holidayCount = holidayDatesInRange.Count;
+                int vacationDaysWithoutHolidays = vacationDays - holidayCount;
 
-                    txtVacationDaysCount.Text = vacationText;
-                    txtVacationDaysCount.Visibility = Visibility.Visible;
+                var selectedType = Type.SelectedItem as string ?? "";
+                var noCountTypes = new[] { "Дополнительный", "Без сохранения з/п", "Учебный" };
+                bool isCounted = !noCountTypes.Contains(selectedType);
 
-                    if (Employee.SelectedItem != null && vacationDaysWithoutHolidays > remainingDays)
+                string vacationText = $"{selectedType} отпуск: {vacationDaysWithoutHolidays} дней";
+                if (holidayCount > 0)
+                    vacationText += $" (без учёта {holidayCount} праздничных дней)";
+
+                txtVacationDaysCount.Text = vacationText;
+                txtVacationDaysCount.Visibility = Visibility.Visible;
+
+                if (isCounted)
+                {
+                    int remainingAfterThis = remainingDays - vacationDaysWithoutHolidays;
+
+                    if (remainingAfterThis < 0)
                     {
-                        txtVacationDaysCount.Text += " (превышен лимит!)";
+                        txtVacationDaysCount.Text += $" (превышен лимит на {Math.Abs(remainingAfterThis)} дней)";
                         txtVacationDaysCount.Foreground = Brushes.Red;
                     }
                     else
                     {
                         txtVacationDaysCount.Foreground = Brushes.Black;
                     }
+
+                    txtVacationDaysLeft.Text = $"Осталось дней отпуска: {remainingAfterThis} (накоплено {remainingDays + usedDays} - использовано {usedDays + vacationDaysWithoutHolidays})";
+                }
+                else
+                {
+                    txtVacationDaysCount.Foreground = Brushes.Black;
+                    txtVacationDaysLeft.Text = $"Осталось дней отпуска: {remainingDays} (накоплено {remainingDays + usedDays} - использовано {usedDays})";
                 }
             }
             else
@@ -381,6 +412,45 @@ if (vacationDaysWithoutHolidays > remainingDays)
                 txtVacationDaysCount.Visibility = Visibility.Collapsed;
                 txtVacationDaysCount.Foreground = Brushes.Black;
             }
+        }
+
+        private void Type_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var selectedType = Type.SelectedItem as string;
+
+            if (string.IsNullOrEmpty(selectedType))
+            {
+                dateStart.IsEnabled = false;
+                txtVacationDaysCount.Visibility = Visibility.Collapsed;
+                dateEnd.IsEnabled = false;
+                return;
+            }
+
+            dateStart.IsEnabled = true;
+            dateEnd.IsEnabled = true;
+
+            switch (selectedType)
+            {
+                case "Дополнительный":
+                    txtVacationDaysCount.Text = "Дополнительный отпуск.";
+                    txtVacationDaysCount.Visibility = Visibility.Visible;
+                    break;
+                case "Без сохранения з/п":
+                    txtVacationDaysCount.Text = "Отпуск без сохранения зарплаты.";
+                    txtVacationDaysCount.Visibility = Visibility.Visible;
+                    break;
+                case "Учебный":
+                    txtVacationDaysCount.Text = "Учебный отпуск предоставляется по справке.";
+                    txtVacationDaysCount.Visibility = Visibility.Visible;
+                    break;
+                default:
+                    txtVacationDaysCount.Text = string.Empty;
+                    txtVacationDaysCount.Visibility = Visibility.Collapsed;
+                    break;
+            }
+
+            if (!string.IsNullOrEmpty(txtVacationDaysCount.Text))
+                txtVacationDaysCount.Visibility = Visibility.Visible;
         }
     }
 }

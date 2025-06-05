@@ -213,7 +213,8 @@ namespace SYP.Pages
             try
             {
                 var holidays = await HolidayService.GetUpcomingHolidaysAsync();
-                HolidayList.ItemsSource = holidays;
+                var top3 = holidays.Where(h => h.Date >= DateTime.Now).OrderBy(h => h.Date).Take(3).ToList();
+                HolidayList.ItemsSource = top3;
             }
             catch
             {
@@ -253,6 +254,12 @@ namespace SYP.Pages
         private void Logout(object sender, MouseButtonEventArgs e)
         {
             MainWindow.mw.OpenPages(new Pages.Authorization.Authorization());
+        }
+
+        private void Calendar_DisplayDateChanged(object sender, CalendarDateChangedEventArgs e)
+        {
+            var calendar = sender as System.Windows.Controls.Calendar;
+            calendar.InvalidateVisual();
         }
     }
 }
