@@ -40,7 +40,7 @@
                 </Grid>
 
                 <Label Content="Дата начала отпуска:" FontSize="15" Grid.Row="2" Grid.Column="0" Margin="0,6" Foreground="#202a45"/>
-                <DatePicker x:Name="dateStart" IsEnabled="False" Grid.Row="2" Grid.Column="1" Height="30" FontSize="15" VerticalContentAlignment="Center" Style="{DynamicResource DatePickerStyle1}" SelectedDateChanged="Date_SelectedDateChanged"/>
+                <DatePicker x:Name="dateStart" CalendarOpened="DatePicker_CalendarOpened" IsEnabled="False" Grid.Row="2" Grid.Column="1" Height="30" FontSize="15" VerticalContentAlignment="Center" Style="{DynamicResource DatePickerStyle1}" SelectedDateChanged="Date_SelectedDateChanged"/>
 
                 <Label Content="Дата окончания отпуска:" FontSize="15" Grid.Row="3" Grid.Column="0" Foreground="#202a45"/>
                 <Grid Grid.Row="3" Grid.Column="1">
@@ -49,7 +49,7 @@
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
 
-                    <DatePicker x:Name="dateEnd" IsEnabled="False" Height="30" FontSize="15" VerticalContentAlignment="Center" Style="{DynamicResource DatePickerStyle1}" SelectedDateChanged="Date_SelectedDateChanged"/>
+                    <DatePicker x:Name="dateEnd" IsEnabled="False" Height="30" FontSize="15" VerticalContentAlignment="Center" Style="{DynamicResource DatePickerStyle1}" CalendarOpened="DatePicker_CalendarOpened" SelectedDateChanged="Date_SelectedDateChanged"/>
                     <TextBlock x:Name="txtVacationDaysCount" Padding="5,0,5,0" Visibility="Collapsed" FontSize="13" VerticalAlignment="Center"  Grid.Row="1"/>
                 </Grid>
 

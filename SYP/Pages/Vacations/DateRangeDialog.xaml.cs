@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SYP.Context;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -22,10 +23,17 @@ namespace SYP
         public DateTime? StartDate => StartDatePicker.SelectedDate;
         public DateTime? EndDate => EndDatePicker.SelectedDate;
 
+        VacationTypeContext typeContext = new VacationTypeContext();
+
         public DateRangeDialog()
         {
             InitializeComponent();
+
+            foreach (var item in typeContext.VacationTypes)
+                typeVacation.Items.Add(item.Name);
         }
+
+        public string SelectedVacationType => typeVacation.SelectedItem as string;
 
         public string SelectedFormat
         {

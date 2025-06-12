@@ -15,7 +15,9 @@ using System.Net.Http;
 using System.Net.Mail;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Media;
+using System.Windows.Threading;
 using Xceed.Document.NET;
 using Xceed.Words.NET;
 
@@ -30,6 +32,7 @@ namespace SYP.Pages.Vacations
         VacationTypeContext typeContext = new VacationTypeContext();
         EmployeeContext employeeContext = new EmployeeContext();
         DepartmentContext departmentContext = new DepartmentContext();
+        VacationStatusContext statusContext = new VacationStatusContext();
         Models.Vacations vacations;
         private Users currentUser;
         private int remainingDays = 0;
@@ -184,29 +187,12 @@ namespace SYP.Pages.Vacations
 
                 await UpdateEmployeeVacationBalancesAsync();
 
-                // Данные администратора
-                var manager = employeeContext.Employees.FirstOrDefault(m => m.Id == 6);
-                string managerName = manager != null ? $"{manager.LastName} {manager.FirstName} {manager.Patronymic}" : "Руководитель не найден";
-
-                string employeeName = $"{emp.LastName} {emp.FirstName} {emp.Patronymic}";
-                string vacationTypeName = selectedType.Name;
-                int vacationDaysCount = vacationDaysWithoutHolidays;
-                var departments = departmentContext.Departments.ToList();
-
-                string docPath = GenerateVacationRequestDoc(managerName, employeeName, emp.DepartmentId, departments, vacationTypeName, start, end, vacationDaysCount);
-
-                SendEmailWithAttachment(
-                    toEmail: manager?.Email,
-                    subject: "Заявка на отпуск",
-                    body: $"Здравствуйте, {managerName}.\n\nПрикреплена заявка на отпуск сотрудника {employeeName} ({emp.Email}).",
-                    attachmentPath: docPath);
-
-                MessageBox.Show("Заявка успешно отправлена и документ отправлен на почту!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("Заявка успешно отправлена!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
                 MainWindow.mw.OpenPages(new Vacations());
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Ошибка при сохранении или отправке: \n" + ex.Message, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Ошибка при сохранении: \n" + ex.Message, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -315,97 +301,8 @@ namespace SYP.Pages.Vacations
                 txtVacationDaysCount.Visibility = Visibility.Collapsed;
             }
         }
-
-        string GetDepartmentNameById(int departmentId, List<Models.Departments> departments)
-        {
-            var department = departments.FirstOrDefault(d => d.Id == departmentId);
-            return department != null ? department.Name : "Неизвестный отдел";
-        }
-
-        public string GenerateVacationRequestDoc(string managerName, string employeeName, int departmentId, List<Models.Departments> departments, string vacationType, DateTime startDate, DateTime endDate, int daysCount)
-        {
-            string tempFilePath = Path.Combine(Path.GetTempPath(), $"VacationRequest_{employeeName}_{DateTime.Now:yyyyMMddHHmmss}.docx");
-            var russianCulture = new CultureInfo("ru-RU");
-            string formattedDate = DateTime.Today.ToString("d MMMM yyyy", russianCulture);
-            string departmentName = GetDepartmentNameById(departmentId, departments);
-
-            using (var doc = DocX.Create(tempFilePath))
-            {
-                var p1 = doc.InsertParagraph()
-                    .AppendLine($"Руководителю: {managerName}")
-                    .Font("Times New Roman")
-                    .FontSize(14)
-                    .AppendLine($"От сотрудника: {employeeName}, отдел {departmentName}")
-                    .Font("Times New Roman")
-                    .FontSize(14)
-                    .SpacingAfter(20);
-                p1.Alignment = (Xceed.Document.NET.Alignment)ParagraphAlignment.Right;
-                p1.LineSpacing = (20f);
-
-                var p2 = doc.InsertParagraph("Заявление")
-                   .Font("Times New Roman")
-                   .FontSize(16)
-                   .Bold();
-                p2.Alignment = (Xceed.Document.NET.Alignment)ParagraphAlignment.Center;
-                p2.LineSpacing = (20f);
-
-                var p3 = doc.InsertParagraph()
-                    .SpacingAfter(10)
-                    .AppendLine($"Тип отпуска: {vacationType}")
-                    .Font("Times New Roman")
-                    .FontSize(14)
-                    .AppendLine($"Прошу предоставить мне отпуск с {startDate:dd.MM.yyyy} по {endDate:dd.MM.yyyy} продолжительностью {daysCount} календарных дней.")
-                    .Font("Times New Roman")
-                    .FontSize(14);
-                p3.SpacingAfter(20);
-                p3.LineSpacing = (20f);
-
-                var p4 = doc.InsertParagraph();
-                p4.Append(formattedDate)
-                    .Font("Times New Roman")
-                    .FontSize(14);
-                p4.Append("             /Подпись ________/ Расшифровка _________________")
-                    .Font("Times New Roman")
-                    .FontSize(14);
-
-                p4.LineSpacing = 20f;
-
-                doc.Save();
-            }
-
-            return tempFilePath;
-        }
-        public void SendEmailWithAttachment(string toEmail, string subject, string body, string attachmentPath)
-        {
-            var fromAddress = new MailAddress("pleshkovaanastas@yandex.ru", "SotrudniK");
-            var toAddress = new MailAddress(toEmail);
-            const string fromPassword = "enrklmiqltflflhx";
-
-            using (var smtp = new SmtpClient
-            {
-                Host = "smtp.yandex.ru",
-                Port = 587,
-                EnableSsl = true,
-                DeliveryMethod = SmtpDeliveryMethod.Network,
-                UseDefaultCredentials = false,
-                Credentials = new NetworkCredential(fromAddress.Address, fromPassword)
-            })
-            {
-                using (var message = new MailMessage(fromAddress, toAddress)
-                {
-                    Subject = subject,
-                    Body = body
-                })
-                {
-                    if (!string.IsNullOrEmpty(attachmentPath))
-                    {
-                        message.Attachments.Add(new Attachment(attachmentPath));
-                    }
-
-                    smtp.Send(message);
-                }
-            }
-        }
+        
+        
 
         private void VacationType_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -440,6 +337,77 @@ namespace SYP.Pages.Vacations
 
             if (!string.IsNullOrEmpty(txtVacationDaysCount.Text))
                 txtVacationDaysCount.Visibility = Visibility.Visible;
+        }
+
+        private async void DatePicker_CalendarOpened(object sender, RoutedEventArgs e)
+        {
+            if (currentUser?.EmployeeId == null) return;
+
+            var emp = await employeeContext.Employees.FirstOrDefaultAsync(emp => emp.Id == currentUser.EmployeeId);
+            if (emp == null) return;
+
+            int departmentId = emp.DepartmentId;
+
+            var approvedStatus = await statusContext.VacationStatus
+                .FirstOrDefaultAsync(s => s.Name == "Одобрено");
+
+            if (approvedStatus == null) return;
+
+            var allVacations = vacationContext.Vacations
+                .Where(v => v.StatusId == approvedStatus.Id)
+                .ToList();
+
+            var allEmployees = employeeContext.Employees.ToList();
+
+            await Dispatcher.InvokeAsync(async () =>
+            {
+                await Task.Delay(100);
+
+                if (sender is DatePicker datePicker &&
+                    datePicker.Template.FindName("PART_Popup", datePicker) is Popup popup &&
+                    popup.Child is System.Windows.Controls.Calendar calendar)
+                {
+                    var buttons = FindVisualChildren<CalendarDayButton>(calendar);
+
+                    foreach (var btn in buttons)
+                    {
+                        if (btn.DataContext is DateTime date)
+                        {
+                            var employeesOnVacation = allVacations
+                                .Where(v => v.StartDate <= date && v.EndDate >= date)
+                                .Select(v => allEmployees.FirstOrDefault(empItem => empItem.Id == v.EmployeeId))
+                                .Where(employee => employee != null && employee.DepartmentId == departmentId)
+                                .ToList();
+
+                            if (employeesOnVacation.Any())
+                            {
+                                btn.Background = new SolidColorBrush((System.Windows.Media.Color)ColorConverter.ConvertFromString("#f6d6d6"));
+
+                                var names = employeesOnVacation
+                                    .Select(empItem => $"{empItem.LastName} {empItem.FirstName} {empItem.Patronymic}")
+                                    .Distinct();
+
+                                btn.ToolTip = "В отпуске:\n" + string.Join("\n", names);
+                            }
+                        }
+                    }
+                }
+            }, DispatcherPriority.Background);
+        }
+        public static IEnumerable<T> FindVisualChildren<T>(DependencyObject depObj) where T : DependencyObject
+        {
+            if (depObj != null)
+            {
+                for (int i = 0; i < VisualTreeHelper.GetChildrenCount(depObj); i++)
+                {
+                    var child = VisualTreeHelper.GetChild(depObj, i);
+                    if (child != null && child is T t)
+                        yield return t;
+
+                    foreach (var childOfChild in FindVisualChildren<T>(child))
+                        yield return childOfChild;
+                }
+            }
         }
     }
 }

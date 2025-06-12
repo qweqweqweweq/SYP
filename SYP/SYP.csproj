@@ -6,7 +6,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
-    <ApplicationIcon>user.ico</ApplicationIcon>
+    <ApplicationIcon>Images\user.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
@@ -15,7 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="user.ico" />
+    <Content Include="Images\user.ico" />
   </ItemGroup>
 
   <ItemGroup>

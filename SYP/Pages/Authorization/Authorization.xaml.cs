@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using SYP.Context;
+﻿using SYP.Context;
 using SYP.Models;
 using SYP.Models.PasswHelp;
 using System.Windows;

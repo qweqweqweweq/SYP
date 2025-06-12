@@ -38,11 +38,6 @@ namespace SYP.Pages.Vacations
             this.Vacation = Vacation;
 
             currentUser = MainWindow.mw.CurrentUser;
-            if (currentUser != null && currentUser.Role == "Admin")
-            {
-                Edit.Visibility = Visibility.Visible;
-                Delete.Visibility = Visibility.Visible;
-            }
 
             var employee = employeeContext.Employees.FirstOrDefault(x => x.Id == Vacation.EmployeeId);
             lbEmployee.Content = "Сотрудник: " + employee.LastName + " " + employee.FirstName + " " + employee.Patronymic;
@@ -51,17 +46,32 @@ namespace SYP.Pages.Vacations
             lbType.Content = "Тип: " + typeContext.VacationTypes.FirstOrDefault(x => x.Id == Vacation.TypeId).Name;
             lbStatus.Content = "Статус: " + statusContext.VacationStatus.FirstOrDefault(x => x.Id == Vacation.StatusId).Name;
 
-            if (Vacation.StatusId == 4)
+            if (currentUser != null)
             {
-                var lightGray = (Color)ColorConverter.ConvertFromString("#FFEEEEEE");
-                border.Background = new SolidColorBrush(lightGray);
-                Edit.Visibility = Visibility.Collapsed;
-                Delete.Visibility = Visibility.Collapsed;
-            }
-            else
-            {
-                Edit.Visibility = Visibility.Visible;
-                Delete.Visibility = Visibility.Visible;
+                if (Vacation.StatusId == 4)
+                {
+                    border.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FFEEEEEE"));
+                    Edit.Visibility = Visibility.Collapsed;
+                    Delete.Visibility = Visibility.Collapsed;
+                }
+                else if (currentUser.Role == "Admin")
+                {
+                    Edit.Visibility = Visibility.Visible;
+                    Delete.Visibility = Visibility.Visible;
+                }
+                else if (currentUser.Role == "User")
+                {
+                    if (Vacation.StatusId == 2)
+                    {
+                        Edit.Visibility = Visibility.Collapsed;
+                        Delete.Visibility = Visibility.Collapsed;
+                    }
+                    else
+                    {
+                        Edit.Visibility = Visibility.Visible;
+                        Delete.Visibility = Visibility.Visible;
+                    }
+                }
             }
         }
 

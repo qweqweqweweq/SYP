@@ -77,8 +77,11 @@
             <Grid>
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Top" Margin="0,10,0,0" HorizontalAlignment="Center">
                     <TextBox x:Name="search" TextChanged="SearchEmployee" Width="320" Height="30" FontSize="15" Margin="0,0,10,0" Style="{StaticResource RoundedTextBox}" Effect="{DynamicResource ShadowEffect}"/>
-                    <ComboBox x:Name="Type" SelectionChanged="SelectedType" FontSize="14" Width="180" Style="{StaticResource ComboBoxStyleEdited}" VerticalContentAlignment="Center" Effect="{DynamicResource ShadowEffect}">
+                    <ComboBox x:Name="Type" SelectionChanged="SelectedType" FontSize="12" Width="160" Style="{StaticResource ComboBoxStyleEdited}" VerticalContentAlignment="Center" Effect="{DynamicResource ShadowEffect}">
                         <ComboBoxItem IsSelected="True">-Тип отпуска-</ComboBoxItem>
+                    </ComboBox>
+                    <ComboBox x:Name="Department" SelectionChanged="SelectedDepartment" Margin="10,0,10,0" FontSize="12" Width="150" Style="{StaticResource ComboBoxStyleEdited}" VerticalContentAlignment="Center" Effect="{DynamicResource ShadowEffect}">
+                        <ComboBoxItem IsSelected="True">-Отдел-</ComboBoxItem>
                     </ComboBox>
                 </StackPanel>
                 <ScrollViewer Margin="0,50,0,40" VerticalScrollBarVisibility="Hidden" Style="{StaticResource RoundedBorderScrollViewerStyle}">
@@ -87,7 +90,8 @@
                 <Button x:Name="PendingLabel" Click="ShowPendingRequests" Visibility="Collapsed" HorizontalAlignment="Left" FontSize="14" Height="25" Width="410" Content="🔔 Есть новые заявки — нажмите, чтобы просмотреть" Style="{StaticResource EditButtonStyle}"/>
                 <Button x:Name="add" Click="AddVacation" Visibility="Collapsed" Content="Добавить" Height="30" FontSize="15" Width="100" VerticalAlignment="Bottom" HorizontalAlignment="Right" Style="{StaticResource EditButtonStyle}"/>
                 <Button x:Name="request" Click="OpenVacationRequest" Visibility="Collapsed" Content="Подать заявку" Height="30" FontSize="15" Width="140" VerticalAlignment="Bottom" HorizontalAlignment="Right" Style="{StaticResource EditButtonStyle}"/>
-                <Button x:Name="export" Click="ExportVacations" Visibility="Collapsed" Content="Экспорт" Height="30" FontSize="15" Width="100" Margin="0,0,110,0" VerticalAlignment="Bottom" HorizontalAlignment="Right" Style="{StaticResource EditButtonStyle}"/>
+                <Button x:Name="export" Click="ExportVacations" Visibility="Collapsed" Content="Экспорт" Height="30" FontSize="15" Width="100" Margin="0,0,120,0" VerticalAlignment="Bottom" HorizontalAlignment="Right" Style="{StaticResource EditButtonStyle}"/>
+                <Button x:Name="import" Click="ImportVacations" Visibility="Collapsed" Content="Импорт" Height="30" FontSize="15" Width="100" Margin="0,0,230,0" VerticalAlignment="Bottom" HorizontalAlignment="Right" Style="{StaticResource EditButtonStyle}"/>
             </Grid>
         </Border>
     </Grid>

@@ -60,7 +60,7 @@
                 <ComboBox x:Name="Type" Grid.Row="1" Grid.Column="1" Height="30" FontSize="15" Style="{DynamicResource ComboBoxStyleEdited}" SelectionChanged="Type_SelectionChanged"/>
 
                 <Label Content="Статус:" Grid.Row="4" FontSize="15" Grid.Column="0" Margin="0,6" Foreground="#202a45"/>
-                <ComboBox x:Name="Status" IsEnabled="False" Grid.Row="4" Grid.Column="1" Height="30" FontSize="15" Style="{DynamicResource ComboBoxStyleEdited}"/>
+                <ComboBox x:Name="Status" Grid.Row="4" Grid.Column="1" Height="30" FontSize="15" Style="{DynamicResource ComboBoxStyleEdited}"/>
             </Grid>
         </Border>
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,20,20">

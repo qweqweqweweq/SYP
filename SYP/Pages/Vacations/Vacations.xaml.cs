@@ -11,6 +11,7 @@ using Microsoft.EntityFrameworkCore;
 using MigraDocDocument = MigraDoc.DocumentObjectModel.Document;
 using MigraDocSection = MigraDoc.DocumentObjectModel.Section;
 using MigraDoc.DocumentObjectModel.Tables;
+using SYP.Pages.Employees;
 
 namespace SYP.Pages.Vacations
 {
@@ -23,6 +24,7 @@ namespace SYP.Pages.Vacations
         EmployeeContext employeeContext = new EmployeeContext();
         VacationTypeContext typeContext = new VacationTypeContext();
         VacationStatusContext statusContext = new VacationStatusContext();
+        DepartmentContext departmentContext = new DepartmentContext();
         private Models.Users currentUser;
 
         public Vacations()
@@ -39,6 +41,7 @@ namespace SYP.Pages.Vacations
                 add.Visibility = Visibility.Visible;
                 settings.Visibility = Visibility.Hidden;
                 export.Visibility = Visibility.Visible;
+                import.Visibility = Visibility.Visible;
             }
             else
             {
@@ -46,6 +49,7 @@ namespace SYP.Pages.Vacations
             }
 
             foreach (var item in typeContext.VacationTypes) Type.Items.Add(item.Name);
+            foreach (var item in departmentContext.Departments) Department.Items.Add(item.Name);
 
             var pendingCount = VacationContext.Vacations.Count(v => v.StatusId == 1);
 
@@ -242,11 +246,25 @@ namespace SYP.Pages.Vacations
                 DateTime startDate = dateDialog.StartDate.Value;
                 DateTime endDate = dateDialog.EndDate.Value;
                 string format = dateDialog.SelectedFormat;
+                var selectedType = dateDialog.SelectedVacationType;
 
                 var vacations = VacationContext.Vacations
                     .Where(v => v.StartDate <= endDate && v.EndDate >= startDate)
                     .OrderBy(v => v.StartDate)
                     .ToList();
+
+                string typeVacation = null;
+
+                if (!string.IsNullOrEmpty(selectedType) && selectedType != "Все")
+                {
+                    var selectedTypeEntity = typeContext.VacationTypes.FirstOrDefault(t => t.Name == selectedType);
+
+                    if (selectedTypeEntity != null)
+                    {
+                        vacations = vacations.Where(v => v.TypeId == selectedTypeEntity.Id).ToList();
+                        typeVacation = selectedTypeEntity.Name;
+                    }
+                }
 
                 if (vacations.Count == 0)
                 {
@@ -276,9 +294,9 @@ namespace SYP.Pages.Vacations
                 string filePath = saveDialog.FileName;
 
                 if (format == "PDF")
-                    ExportToPdf(vacations, filePath, startDate, endDate);
+                    ExportToPdf(vacations, filePath, startDate, endDate, typeVacation);
                 else if (format == "Excel")
-                    ExportToExcel(vacations, filePath, startDate, endDate);
+                    ExportToExcel(vacations, filePath, startDate, endDate, typeVacation);
 
                 MessageBox.Show("Экспорт выполнен успешно!", "Экспорт", MessageBoxButton.OK, MessageBoxImage.Information);
             }
@@ -288,12 +306,16 @@ namespace SYP.Pages.Vacations
             }
         }
 
-        private void ExportToExcel(List<Models.Vacations> vacations, string filePath, DateTime startDate, DateTime endDate)
+        private void ExportToExcel(List<Models.Vacations> vacations, string filePath, DateTime startDate, DateTime endDate, string typeVacation)
         {
             var wb = new XLWorkbook();
             var ws = wb.Worksheets.Add("Отпуска");
 
-            ws.Cell(1, 1).Value = $"Отпуска за период: {startDate:dd.MM.yyyy} — {endDate:dd.MM.yyyy}";
+            string header = $"Отпуска за период: {startDate:dd.MM.yyyy} — {endDate:dd.MM.yyyy}";
+            if (!string.IsNullOrEmpty(typeVacation))
+                header += $" ({typeVacation})";
+
+            ws.Cell(1, 1).Value = header;
             ws.Range(1, 1, 1, 6).Merge().Style.Font.Bold = true;
             ws.Range(1, 1, 1, 6).Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
 
@@ -333,7 +355,7 @@ namespace SYP.Pages.Vacations
             wb.SaveAs(filePath);
         }
 
-        private void ExportToPdf(List<Models.Vacations> vacations, string filePath, DateTime periodStart, DateTime periodEnd)
+        private void ExportToPdf(List<Models.Vacations> vacations, string filePath, DateTime periodStart, DateTime periodEnd, string typeVacation)
         {
             var document = new MigraDocDocument();
             var section = document.AddSection();
@@ -344,7 +366,11 @@ namespace SYP.Pages.Vacations
             title.Format.Alignment = ParagraphAlignment.Center;
             title.Format.SpaceAfter = "0.5cm";
 
-            var periodInfo = section.AddParagraph($"Отпуска за период: {periodStart:dd.MM.yyyy} по {periodEnd:dd.MM.yyyy}");
+            string periodText = $"Отпуска за период: {periodStart:dd.MM.yyyy} по {periodEnd:dd.MM.yyyy}";
+            if (!string.IsNullOrEmpty(typeVacation))
+                periodText += $" ({typeVacation})";
+
+            var periodInfo = section.AddParagraph(periodText);
             periodInfo.Format.Font.Size = 12;
             periodInfo.Format.Font.Italic = true;
             periodInfo.Format.SpaceAfter = "1cm";
@@ -393,6 +419,126 @@ namespace SYP.Pages.Vacations
             pdfRenderer.RenderDocument();
 
             pdfRenderer.PdfDocument.Save(filePath);
+        }
+
+        private void SelectedDepartment(object sender, SelectionChangedEventArgs e)
+        {
+            if (Department.SelectedIndex <= 0)
+            {
+                LoadVacations();
+                return;
+            }
+
+            string selectedDepartmentName = Department.SelectedItem.ToString();
+            var selectedDepartment = departmentContext.Departments.FirstOrDefault(s => s.Name == selectedDepartmentName);
+
+            if (selectedDepartment != null)
+            {
+                var matchedEmployees = employeeContext.Employees.Where(emp => emp.DepartmentId == selectedDepartment.Id).Select(emp => emp.Id).ToList();
+                var filteredVacations = VacationContext.Vacations.Where(v => matchedEmployees.Contains(v.EmployeeId)).ToList();
+
+                showVacations.Children.Clear();
+
+                foreach (var vacation in filteredVacations)
+                {
+                    showVacations.Children.Add(new VacationItem(this, vacation));
+                }
+            }
+        }
+
+        private void ImportVacations(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var openDialog = new Microsoft.Win32.OpenFileDialog
+                {
+                    Filter = "Excel files (*.xlsx)|*.xlsx",
+                    Title = "Выберите Excel-файл с отпусками"
+                };
+
+                if (openDialog.ShowDialog() != true)
+                    return;
+
+                using (var workbook = new XLWorkbook(openDialog.FileName))
+                {
+                    var worksheet = workbook.Worksheet(1);
+                    var rows = worksheet.RangeUsed().RowsUsed().Skip(1);
+
+                    int importedCount = 0;
+                    int duplicateCount = 0;
+
+                    foreach (var row in rows)
+                    {
+                        try
+                        {
+                            string employeeFullName = row.Cell(1).GetValue<string>().Trim();
+                            string[] nameParts = employeeFullName.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                            if (nameParts.Length < 2) continue;
+
+                            string lastName = nameParts[0];
+                            string firstName = nameParts[1];
+                            string patronymic = nameParts.Length > 2 ? nameParts[2] : null;
+
+                            var employee = employeeContext.Employees.FirstOrDefault(e =>
+                                e.LastName.Trim().ToLower() == lastName.ToLower() &&
+                                e.FirstName.Trim().ToLower() == firstName.ToLower() &&
+                                (string.IsNullOrWhiteSpace(patronymic) || e.Patronymic.Trim().ToLower() == patronymic.ToLower()));
+
+                            if (employee == null)
+                                continue;
+
+                            DateTime startDate = row.Cell(2).GetDateTime();
+                            DateTime endDate = row.Cell(3).GetDateTime();
+                            string typeName = row.Cell(4).GetString().Trim();
+                            string statusName = row.Cell(5).GetString().Trim();
+
+                            var type = typeContext.VacationTypes.FirstOrDefault(t => t.Name.Trim().ToLower() == typeName.ToLower());
+                            var status = statusContext.VacationStatus.FirstOrDefault(s => s.Name.Trim().ToLower() == statusName.ToLower());
+
+                            if (type == null || status == null)
+                                continue;
+
+                            bool isDuplicate = VacationContext.Vacations.Any(v =>
+                                v.EmployeeId == employee.Id &&
+                                v.StartDate == startDate &&
+                                v.EndDate == endDate &&
+                                v.TypeId == type.Id &&
+                                v.StatusId == status.Id);
+
+                            if (isDuplicate)
+                            {
+                                duplicateCount++;
+                                continue;
+                            }
+
+                            var newVacation = new Models.Vacations
+                            {
+                                EmployeeId = employee.Id,
+                                StartDate = startDate,
+                                EndDate = endDate,
+                                TypeId = type.Id,
+                                StatusId = status.Id
+                            };
+
+                            VacationContext.Vacations.Add(newVacation);
+                            importedCount++;
+                        }
+                        catch (Exception innerEx)
+                        {
+                            MessageBox.Show(innerEx.Message, "Ошибка в строке Excel", MessageBoxButton.OK, MessageBoxImage.Warning);
+                            continue;
+                        }
+                    }
+
+                    VacationContext.SaveChanges();
+                    MessageBox.Show($"Импорт завершен. Добавлено записей: {importedCount}. Повторяющихся записей: {duplicateCount}.", "Импорт", MessageBoxButton.OK, MessageBoxImage.Information);
+                    LoadVacations();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка при импорте: {ex.Message}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
     }
 }

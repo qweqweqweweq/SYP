@@ -16,10 +16,25 @@ namespace SYP.Pages.Employees
         public PositionContext PositionContext = new PositionContext();
         VacationContext VacationContext = new VacationContext();
         private Models.Users currentUser;
+        private Models.Departments selectedDepartment;
 
         public Employees()
         {
             InitializeComponent();
+
+            Init(null);
+        }
+
+        public Employees(Models.Departments department)
+        {
+            InitializeComponent();
+
+            Init(department);
+        }
+
+        private void Init(Models.Departments department)
+        {
+            selectedDepartment = department;
 
             ProfileOverlay.MainEmployees = this;
 
@@ -29,12 +44,44 @@ namespace SYP.Pages.Employees
                 add.Visibility = Visibility.Visible;
                 settings.Visibility = Visibility.Hidden;
             }
-            UpdateEmployeeStatuses();
-            LoadEmployees();
 
-            foreach (var item in DepartmentContext.Departments) Department.Items.Add(item.Name);
-            foreach (var item in PositionContext.Positions) Position.Items.Add(item.Name);
-            foreach (var item in StatusContext.EmployeeStatus) Status.Items.Add(item.Name);
+            UpdateEmployeeStatuses();
+
+            foreach (var item in DepartmentContext.Departments)
+                Department.Items.Add(item.Name);
+            foreach (var item in PositionContext.Positions)
+                Position.Items.Add(item.Name);
+            foreach (var item in StatusContext.EmployeeStatus)
+                Status.Items.Add(item.Name);
+
+            Loaded += Employees_Loaded;
+        }
+
+        private void Employees_Loaded(object sender, RoutedEventArgs e)
+        {
+            if (selectedDepartment != null)
+            {
+                Department.SelectedItem = selectedDepartment.Name;
+                FilterByDepartment(selectedDepartment.Id);
+            }
+            else
+            {
+                LoadEmployees();
+            }
+        }
+
+        private void FilterByDepartment(int departmentId)
+        {
+            var matchedEmployees = EmployeeContext.Employees
+                .Where(e => e.DepartmentId == departmentId)
+                .ToList();
+
+            showEmployees.Children.Clear();
+
+            foreach (var item in matchedEmployees)
+            {
+                showEmployees.Children.Add(new EmployeeItem(this, item));
+            }
         }
 
         private void LoadEmployees()
@@ -77,35 +124,17 @@ namespace SYP.Pages.Employees
             EmployeeContext.SaveChanges();
         }
 
-        private void OpenMain(object sender, MouseButtonEventArgs e)
-        {
-            MainWindow.mw.OpenPages(new Main());
-        }
+        private void OpenMain(object sender, MouseButtonEventArgs e) => MainWindow.mw.OpenPages(new Main());
 
-        private void OpenDepartments(object sender, MouseButtonEventArgs e)
-        {
-            MainWindow.mw.OpenPages(new Departments.Departments());
-        }
+        private void OpenDepartments(object sender, MouseButtonEventArgs e) => MainWindow.mw.OpenPages(new Departments.Departments());
 
-        private void OpenPositions(object sender, MouseButtonEventArgs e)
-        {
-            MainWindow.mw.OpenPages(new Positions.Positions());
-        }
+        private void OpenPositions(object sender, MouseButtonEventArgs e) => MainWindow.mw.OpenPages(new Positions.Positions());
 
-        private void OpenVacations(object sender, MouseButtonEventArgs e)
-        {
-            MainWindow.mw.OpenPages(new Vacations.Vacations());
-        }
+        private void OpenVacations(object sender, MouseButtonEventArgs e) => MainWindow.mw.OpenPages(new Vacations.Vacations());
 
-        private void OpenSettings(object sender, MouseButtonEventArgs e)
-        {
-            MainWindow.mw.OpenPages(new Settings());
-        }
+        private void OpenSettings(object sender, MouseButtonEventArgs e) => MainWindow.mw.OpenPages(new Settings());
 
-        private void Logout(object sender, MouseButtonEventArgs e)
-        {
-            MainWindow.mw.OpenPages(new Authorization.Authorization());
-        }
+        private void Logout(object sender, MouseButtonEventArgs e) => MainWindow.mw.OpenPages(new Authorization.Authorization());
 
         private void SelectedStatus(object sender, SelectionChangedEventArgs e)
         {
@@ -131,10 +160,7 @@ namespace SYP.Pages.Employees
             }
         }
 
-        private void AddEmployee(object sender, RoutedEventArgs e)
-        {
-            MainWindow.mw.OpenPages(new Pages.Employees.EmployeeEdit(this, null));
-        }
+        private void AddEmployee(object sender, RoutedEventArgs e) => MainWindow.mw.OpenPages(new Pages.Employees.EmployeeEdit(this, null));
 
         private void SearchEmployee(object sender, TextChangedEventArgs e)
         {
@@ -163,14 +189,7 @@ namespace SYP.Pages.Employees
 
             if (selectedDepartment != null)
             {
-                var matchedEmployees = EmployeeContext.Employees.Where(e => e.DepartmentId == selectedDepartment.Id).ToList();
-
-                showEmployees.Children.Clear();
-
-                foreach (var item in matchedEmployees)
-                {
-                    showEmployees.Children.Add(new EmployeeItem(this, item));
-                }
+                FilterByDepartment(selectedDepartment.Id);
             }
         }
 

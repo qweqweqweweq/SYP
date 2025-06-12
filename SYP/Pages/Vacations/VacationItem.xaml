@@ -20,10 +20,10 @@
                 <Label x:Name="lbStatus" Content="Статус заявки: одобрен" Height="30" FontSize="14"/>
             </StackPanel>
             <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="10" HorizontalAlignment="Right" VerticalAlignment="Center">
-                <Label x:Name="Edit" MouseDown="EditClick" Height="30" Width="30" Margin="10,0,0,0" Visibility="Collapsed" Style="{StaticResource HoverLabelStyle}">
+                <Label x:Name="Edit" MouseDown="EditClick" Height="30" Width="30" Margin="10,0,0,0" Style="{StaticResource HoverLabelStyle}">
                     <fa:ImageAwesome Icon="Pencil" Width="20" Height="20" Foreground="#FF728EBB"/>
                 </Label>
-                <Label x:Name="Delete" MouseDown="DeleteClick" Height="30" Width="30" Margin="5,0,0,0" Visibility="Collapsed" Style="{StaticResource HoverLabelStyle}">
+                <Label x:Name="Delete" MouseDown="DeleteClick" Height="30" Width="30" Margin="5,0,0,0" Style="{StaticResource HoverLabelStyle}">
                     <fa:ImageAwesome Icon="Trash" Width="20" Height="20" Foreground="#FF728EBB"/>
                 </Label>
             </StackPanel>

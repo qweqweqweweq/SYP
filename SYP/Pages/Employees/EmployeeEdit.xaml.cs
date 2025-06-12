@@ -1,19 +1,7 @@
 ﻿using SYP.Context;
 using SYP.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace SYP.Pages.Employees
 {
@@ -90,58 +78,65 @@ namespace SYP.Pages.Employees
 
         private void Cancel(object sender, RoutedEventArgs e)
         {
-            MainWindow.mw.OpenPages(new Employees());
+            MainWindow.mw.OpenPages(new Employees(null));
         }
 
         private void Save(object sender, RoutedEventArgs e)
         {
+            bool emailExists = MainEmployees.EmployeeContext.Employees.Any(e => e.Email == email.Text && (employees == null || e.Id != employees.Id));
+
             try
             {
                 if (!RegexValidator.IsFullNameValid(FIO.Text))
                 {
-                    MessageBox.Show("Введите корректное ФИО (только буквы, минимум 5 символов).");
+                    MessageBox.Show("Введите корректное ФИО (только буквы, минимум 5 символов).", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
 
                 if (!RegexValidator.IsEmailValid(email.Text))
                 {
-                    MessageBox.Show("Введите корректный Email.");
+                    MessageBox.Show("Введите корректный Email.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+                if (emailExists)
+                {
+                    MessageBox.Show("Сотрудник с таким Email уже существует.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
 
                 if (!RegexValidator.IsPhoneValid(phoneNumber.Text))
                 {
-                    MessageBox.Show("Введите корректный номер телефона (формат: +7XXXXXXXXXX).");
+                    MessageBox.Show("Введите корректный номер телефона (формат: +7XXXXXXXXXX).", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
 
                 if (dateBirth.SelectedDate == null)
                 {
-                    MessageBox.Show("Выберите дату рождения.");
+                    MessageBox.Show("Выберите дату рождения.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
 
                 if (dateHire.SelectedDate == null)
                 {
-                    MessageBox.Show("Выберите дату поступления.");
+                    MessageBox.Show("Выберите дату поступления.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
 
                 if (position.SelectedItem == null)
                 {
-                    MessageBox.Show("Выберите должность.");
+                    MessageBox.Show("Выберите должность.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
 
                 if (department.SelectedItem == null)
                 {
-                    MessageBox.Show("Выберите отдел.");
+                    MessageBox.Show("Выберите отдел.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
 
                 if (status.SelectedItem == null)
                 {
-                    MessageBox.Show("Выберите статус.");
+                    MessageBox.Show("Выберите статус.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
                 }
 
@@ -186,11 +181,11 @@ namespace SYP.Pages.Employees
                     employees.StatusId = statusContext.EmployeeStatus.Where(x => x.Name == status.SelectedItem.ToString()).First().Id;
                 }
                 MainEmployees.EmployeeContext.SaveChanges();
-                MainWindow.mw.OpenPages(new Pages.Employees.Employees());
+                MainWindow.mw.OpenPages(new Pages.Employees.Employees(null));
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Возникла ошибка.\n" + ex.Message);
+                MessageBox.Show("Возникла ошибка.\n" + ex.Message, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
         }
     }

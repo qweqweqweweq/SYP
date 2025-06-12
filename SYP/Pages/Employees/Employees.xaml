@@ -7,7 +7,7 @@
       xmlns:fa="http://schemas.fontawesome.io/icons/"
       mc:Ignorable="d" 
       d:DesignHeight="650" d:DesignWidth="1000"
-      Title="Employees" FontFamily="/Fonts/#Montserrat">
+      Title="Employees" FontFamily="/Fonts/#Montserrat" Loaded="Employees_Loaded">
 
     <Grid Background="#FFDCE4F1">
         <Grid.ColumnDefinitions>
@@ -79,7 +79,7 @@
             <Grid>
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Top" Margin="0,10,0,0" HorizontalAlignment="Center">
                     <TextBox x:Name="search" TextChanged="SearchEmployee" Width="320" Height="30" FontSize="15" Margin="0,0,10,0" Style="{StaticResource RoundedTextBox}" VerticalContentAlignment="Center" Effect="{DynamicResource ShadowEffect}"/>
-                    <ComboBox x:Name="Department" SelectionChanged="SelectedDepartment" Margin="0,0,10,0" FontSize="12" Width="110" Style="{StaticResource ComboBoxStyleEdited}" VerticalContentAlignment="Center" Effect="{DynamicResource ShadowEffect}">
+                    <ComboBox x:Name="Department" Visibility="Visible" SelectionChanged="SelectedDepartment" Margin="0,0,10,0" FontSize="12" Width="130" Style="{StaticResource ComboBoxStyleEdited}" VerticalContentAlignment="Center" Effect="{DynamicResource ShadowEffect}">
                         <ComboBoxItem IsSelected="True">-Отдел-</ComboBoxItem>
                     </ComboBox>
                     <ComboBox x:Name="Position" SelectionChanged="SelectedPosition" Margin="0,0,10,0" FontSize="12" Width="190" Style="{StaticResource ComboBoxStyleEdited}" VerticalContentAlignment="Center" Effect="{DynamicResource ShadowEffect}">

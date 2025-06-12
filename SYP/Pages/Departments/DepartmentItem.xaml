@@ -6,7 +6,36 @@
              xmlns:local="clr-namespace:SYP.Pages.Departments"
              xmlns:fa="http://schemas.fontawesome.io/icons/"
              mc:Ignorable="d" FontFamily="/Fonts/#Montserrat">
-    <Border CornerRadius="10" Background="White" Margin="10,5,10,5" Effect="{DynamicResource ShadowEffect}">
+    <Border CornerRadius="10" Background="White" Margin="10,5,10,5" Effect="{DynamicResource ShadowEffect}" MouseDown="OpenEmployeesDept">
+        <Border.Style>
+            <Style TargetType="Border">
+                <Setter Property="Cursor" Value="Hand"/>
+                <Setter Property="Background" Value="White"/>
+                <Style.Triggers>
+                    <Trigger Property="IsMouseOver" Value="True">
+                        <Trigger.EnterActions>
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <ColorAnimation
+                                    Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                    To="#FFDEDEDE" Duration="0:0:0.2"/>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </Trigger.EnterActions>
+                        <Trigger.ExitActions>
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <ColorAnimation
+                                    Storyboard.TargetProperty="(Border.Background).(SolidColorBrush.Color)"
+                                    To="White" Duration="0:0:0.2"/>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </Trigger.ExitActions>
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+        </Border.Style>
+
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
