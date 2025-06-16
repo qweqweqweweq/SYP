@@ -53,19 +53,26 @@ namespace SYP.Pages.Positions
 
         private void DeleteClick(object sender, MouseButtonEventArgs e)
         {
-            if (MessageBox.Show("Вы уверены, что хотите удалить должность?", "Подтверждение", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+            try
             {
-                using (var context = new PositionContext())
+                if (MessageBox.Show("Вы уверены, что хотите удалить должность?", "Подтверждение", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
                 {
-                    var positionToDelete = context.Positions.FirstOrDefault(x => x.Id == Position.Id);
-                    if (positionToDelete != null)
+                    using (var context = new PositionContext())
                     {
-                        context.Positions.Remove(positionToDelete);
-                        context.SaveChanges();
-                        MessageBox.Show("Должность удалена");
-                        (this.Parent as Panel).Children.Remove(this);
+                        var positionToDelete = context.Positions.FirstOrDefault(x => x.Id == Position.Id);
+                        if (positionToDelete != null)
+                        {
+                            context.Positions.Remove(positionToDelete);
+                            context.SaveChanges();
+                            MessageBox.Show("Должность удалена");
+                            (this.Parent as Panel).Children.Remove(this);
+                        }
                     }
                 }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Возникла ошибка.\n" + ex.Message);
             }
         }
     }

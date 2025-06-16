@@ -136,31 +136,8 @@ namespace SYP.Pages.Employees
 
         private void Logout(object sender, MouseButtonEventArgs e) => MainWindow.mw.OpenPages(new Authorization.Authorization());
 
-        private void SelectedStatus(object sender, SelectionChangedEventArgs e)
-        {
-            if (Status.SelectedIndex <= 0)
-            {
-                LoadEmployees();
-                return;
-            }
-
-            string selectedStatusName = Status.SelectedItem.ToString();
-            var selectedStatus = StatusContext.EmployeeStatus.FirstOrDefault(s => s.Name == selectedStatusName);
-
-            if (selectedStatus != null)
-            {
-                var matchedEmployees = EmployeeContext.Employees.Where(e => e.StatusId == selectedStatus.Id).ToList();
-
-                showEmployees.Children.Clear();
-
-                foreach (var item in matchedEmployees)
-                {
-                    showEmployees.Children.Add(new EmployeeItem(this, item));
-                }
-            }
-        }
-
         private void AddEmployee(object sender, RoutedEventArgs e) => MainWindow.mw.OpenPages(new Pages.Employees.EmployeeEdit(this, null));
+
 
         private void SearchEmployee(object sender, TextChangedEventArgs e)
         {
@@ -173,23 +150,6 @@ namespace SYP.Pages.Employees
             foreach (var item in result)
             {
                 showEmployees.Children.Add(new EmployeeItem(this, item));
-            }
-        }
-
-        private void SelectedDepartment(object sender, SelectionChangedEventArgs e)
-        {
-            if (Department.SelectedIndex <= 0)
-            {
-                LoadEmployees();
-                return;
-            }
-
-            string selectedDepartmentName = Department.SelectedItem.ToString();
-            var selectedDepartment = DepartmentContext.Departments.FirstOrDefault(s => s.Name == selectedDepartmentName);
-
-            if (selectedDepartment != null)
-            {
-                FilterByDepartment(selectedDepartment.Id);
             }
         }
 
@@ -214,6 +174,47 @@ namespace SYP.Pages.Employees
                 {
                     showEmployees.Children.Add(new EmployeeItem(this, item));
                 }
+            }
+        }
+
+        private void SelectedStatus(object sender, SelectionChangedEventArgs e)
+        {
+            if (Status.SelectedIndex <= 0)
+            {
+                LoadEmployees();
+                return;
+            }
+
+            string selectedStatusName = Status.SelectedItem.ToString();
+            var selectedStatus = StatusContext.EmployeeStatus.FirstOrDefault(s => s.Name == selectedStatusName);
+
+            if (selectedStatus != null)
+            {
+                var matchedEmployees = EmployeeContext.Employees.Where(e => e.StatusId == selectedStatus.Id).ToList();
+
+                showEmployees.Children.Clear();
+
+                foreach (var item in matchedEmployees)
+                {
+                    showEmployees.Children.Add(new EmployeeItem(this, item));
+                }
+            }
+        }
+
+        private void SelectedDepartment(object sender, SelectionChangedEventArgs e)
+        {
+            if (Department.SelectedIndex <= 0)
+            {
+                LoadEmployees();
+                return;
+            }
+
+            string selectedDepartmentName = Department.SelectedItem.ToString();
+            var selectedDepartment = DepartmentContext.Departments.FirstOrDefault(s => s.Name == selectedDepartmentName);
+
+            if (selectedDepartment != null)
+            {
+                FilterByDepartment(selectedDepartment.Id);
             }
         }
     }

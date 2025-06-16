@@ -77,7 +77,14 @@ namespace SYP.Pages.Vacations
 
         private void EditClick(object sender, MouseButtonEventArgs e)
         {
-            MainWindow.mw.OpenPages(new VacationEdit(MainVacations, Vacation));
+            if (currentUser.Role == "Admin")
+            {
+                MainWindow.mw.OpenPages(new VacationEdit(MainVacations, Vacation));
+            }
+            else
+            {
+                MainWindow.mw.OpenPages(new VacationRequest(MainVacations, Vacation));
+            }
         }
 
         private void DeleteClick(object sender, MouseButtonEventArgs e)

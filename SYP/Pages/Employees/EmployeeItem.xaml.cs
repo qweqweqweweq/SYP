@@ -89,19 +89,26 @@ namespace SYP.Pages.Employees
 
         private void DeleteClick(object sender, MouseButtonEventArgs e)
         {
-            if (MessageBox.Show("Вы уверены, что хотите удалить сотрудника?", "Подтверждение", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+            try
             {
-                using (var context = new EmployeeContext())
+                if (MessageBox.Show("Вы уверены, что хотите удалить сотрудника?", "Подтверждение", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
                 {
-                    var employeeToDelete = context.Employees.FirstOrDefault(x => x.Id == Employee.Id);
-                    if (employeeToDelete != null)
+                    using (var context = new EmployeeContext())
                     {
-                        context.Employees.Remove(employeeToDelete);
-                        context.SaveChanges();
-                        MessageBox.Show("Сотрудник удалён");
-                        (this.Parent as Panel).Children.Remove(this);
+                        var employeeToDelete = context.Employees.FirstOrDefault(x => x.Id == Employee.Id);
+                        if (employeeToDelete != null)
+                        {
+                            context.Employees.Remove(employeeToDelete);
+                            context.SaveChanges();
+                            MessageBox.Show("Сотрудник удалён");
+                            (this.Parent as Panel).Children.Remove(this);
+                        }
                     }
                 }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Возникла ошибка.\n" + ex.Message);
             }
         }
     }

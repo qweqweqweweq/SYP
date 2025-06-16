@@ -20,13 +20,14 @@ using System.Windows.Media;
 using System.Windows.Threading;
 using Xceed.Document.NET;
 using Xceed.Words.NET;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace SYP.Pages.Vacations
 {
     /// <summary>
     /// Логика взаимодействия для VacationRequest.xaml
     /// </summary>
-    public partial class VacationRequest : Page
+    public partial class VacationRequest : System.Windows.Controls.Page
     {
         VacationContext vacationContext = new VacationContext();
         VacationTypeContext typeContext = new VacationTypeContext();
@@ -34,14 +35,25 @@ namespace SYP.Pages.Vacations
         DepartmentContext departmentContext = new DepartmentContext();
         VacationStatusContext statusContext = new VacationStatusContext();
         Models.Vacations vacations;
+        Vacations MainVacations;
         private Users currentUser;
         private int remainingDays = 0;
         private int usedDays = 0;
         private double accruedDays = 0;
 
-        public VacationRequest()
+        public VacationRequest(Vacations MainVacations, Models.Vacations vacations)
         {
             InitializeComponent();
+
+            this.MainVacations = MainVacations;
+            this.vacations = vacations;
+
+            if (vacations != null)
+            {
+                dateStart.SelectedDate = vacations.StartDate;
+                dateEnd.SelectedDate = vacations.EndDate;
+                Type.SelectedItem = typeContext.VacationTypes.Where(x => x.Id == vacations.TypeId).FirstOrDefault()?.Name;
+            }
 
             Loaded += VacationRequest_Loaded;
         }
@@ -171,25 +183,33 @@ namespace SYP.Pages.Vacations
                 return;
             }
 
-            var newVacation = new Models.Vacations
-            {
-                EmployeeId = currentUser.EmployeeId,
-                StartDate = start,
-                EndDate = end,
-                TypeId = selectedType.Id,
-                StatusId = 1
-            };
-
             try
             {
-                vacationContext.Vacations.Add(newVacation);
-                await vacationContext.SaveChangesAsync();
+                if (vacations == null)
+                {
+                    var newVacation = new Models.Vacations
+                    {
+                        EmployeeId = currentUser.EmployeeId,
+                        StartDate = start,
+                        EndDate = end,
+                        TypeId = selectedType.Id,
+                        StatusId = 1
+                    };
+                    MainVacations.VacationContext.Vacations.Add(newVacation);
+                }
+                else
+                {
+                    vacations.StartDate = start;
+                    vacations.EndDate = end;
+                    vacations.TypeId = selectedType.Id;
+                    vacations.StatusId = 1;
+                }
+                MainVacations.VacationContext.SaveChanges();
 
-                await UpdateEmployeeVacationBalancesAsync();
-
-                MessageBox.Show("Заявка успешно отправлена!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("Заявка успешно сохранена!", "Успех", MessageBoxButton.OK, MessageBoxImage.Information);
                 MainWindow.mw.OpenPages(new Vacations());
             }
+
             catch (Exception ex)
             {
                 MessageBox.Show("Ошибка при сохранении: \n" + ex.Message, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -359,41 +379,58 @@ namespace SYP.Pages.Vacations
 
             var allEmployees = employeeContext.Employees.ToList();
 
+            if (sender is DatePicker datePicker &&
+                datePicker.Template.FindName("PART_Popup", datePicker) is Popup popup &&
+                popup.Child is System.Windows.Controls.Calendar calendar)
+            {
+                await HighlightVacationDates(calendar, departmentId, allVacations, allEmployees);
+
+                // Обработка переключения месяца
+                calendar.DisplayDateChanged -= Calendar_DisplayDateChanged; // чтобы не подписаться дважды
+                calendar.DisplayDateChanged += Calendar_DisplayDateChanged;
+
+                async void Calendar_DisplayDateChanged(object s, CalendarDateChangedEventArgs args)
+                {
+                    await HighlightVacationDates(calendar, departmentId, allVacations, allEmployees);
+                }
+            }
+        }
+
+        private async Task HighlightVacationDates(System.Windows.Controls.Calendar calendar, int departmentId, List<Models.Vacations> allVacations, List<Models.Employees> allEmployees)
+        {
             await Dispatcher.InvokeAsync(async () =>
             {
                 await Task.Delay(100);
 
-                if (sender is DatePicker datePicker &&
-                    datePicker.Template.FindName("PART_Popup", datePicker) is Popup popup &&
-                    popup.Child is System.Windows.Controls.Calendar calendar)
+                var buttons = FindVisualChildren<CalendarDayButton>(calendar);
+                foreach (var btn in buttons)
                 {
-                    var buttons = FindVisualChildren<CalendarDayButton>(calendar);
-
-                    foreach (var btn in buttons)
+                    if (btn.DataContext is DateTime date)
                     {
-                        if (btn.DataContext is DateTime date)
+                        var employeesOnVacation = allVacations
+                            .Where(v => v.StartDate <= date && v.EndDate >= date)
+                            .Select(v => allEmployees.FirstOrDefault(empItem => empItem.Id == v.EmployeeId))
+                            .Where(employee => employee != null && employee.DepartmentId == departmentId)
+                            .ToList();
+
+                        if (employeesOnVacation.Any())
                         {
-                            var employeesOnVacation = allVacations
-                                .Where(v => v.StartDate <= date && v.EndDate >= date)
-                                .Select(v => allEmployees.FirstOrDefault(empItem => empItem.Id == v.EmployeeId))
-                                .Where(employee => employee != null && employee.DepartmentId == departmentId)
-                                .ToList();
-
-                            if (employeesOnVacation.Any())
-                            {
-                                btn.Background = new SolidColorBrush((System.Windows.Media.Color)ColorConverter.ConvertFromString("#f6d6d6"));
-
-                                var names = employeesOnVacation
-                                    .Select(empItem => $"{empItem.LastName} {empItem.FirstName} {empItem.Patronymic}")
-                                    .Distinct();
-
-                                btn.ToolTip = "В отпуске:\n" + string.Join("\n", names);
-                            }
+                            btn.Background = new SolidColorBrush((System.Windows.Media.Color)ColorConverter.ConvertFromString("#f6d6d6"));
+                            var names = employeesOnVacation
+                                .Select(empItem => $"{empItem.LastName} {empItem.FirstName} {empItem.Patronymic}")
+                                .Distinct();
+                            btn.ToolTip = "В отпуске:\n" + string.Join("\n", names);
+                        }
+                        else
+                        {
+                            btn.ClearValue(System.Windows.Controls.Control.BackgroundProperty);
+                            btn.ToolTip = null;
                         }
                     }
                 }
             }, DispatcherPriority.Background);
         }
+
         public static IEnumerable<T> FindVisualChildren<T>(DependencyObject depObj) where T : DependencyObject
         {
             if (depObj != null)

@@ -12,6 +12,7 @@ namespace SYP.Pages.Departments
     {
         Departments MainDepartments;
         Models.Departments Department;
+        EmployeeContext employeeContext;
         private Models.Users currentUser;
 
         public DepartmentItem(Departments MainDepartments, Models.Departments Department)
@@ -33,24 +34,49 @@ namespace SYP.Pages.Departments
 
         private void EditClick(object sender, MouseButtonEventArgs e)
         {
+            e.Handled = true;
+
             MainWindow.mw.OpenPages(new Pages.Departments.DepartmentEdit(MainDepartments, Department));
         }
 
         private void DeleteClick(object sender, MouseButtonEventArgs e)
         {
-            if (MessageBox.Show("Вы уверены, что хотите удалить отдел?", "Подтверждение", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+            try
             {
-                using (var context = new DepartmentContext())
+                e.Handled = true;
+
+                bool hasEmployeeDepartment = false;
+                using (var empContext = new EmployeeContext())
                 {
-                    var departmentToDelete = context.Departments.FirstOrDefault(x => x.Id == Department.Id);
-                    if (departmentToDelete != null)
+                    hasEmployeeDepartment = empContext.Employees.Any(emp => emp.DepartmentId == Department.Id);
+                }
+
+                if (hasEmployeeDepartment)
+                {
+                    MessageBox.Show("Удаление невозможно, поскольку в отделе есть сотрудники.", "Ошибка удаления", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+                else
+                {
+                    if (MessageBox.Show("Вы уверены, что хотите удалить отдел?", "Подтверждение", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
                     {
-                        context.Departments.Remove(departmentToDelete);
-                        context.SaveChanges();
-                        MessageBox.Show("Отдел удалён");
-                        (this.Parent as Panel).Children.Remove(this);
+                        using (var context = new DepartmentContext())
+                        {
+                            var departmentToDelete = context.Departments.FirstOrDefault(x => x.Id == Department.Id);
+                            if (departmentToDelete != null)
+                            {
+                                context.Departments.Remove(departmentToDelete);
+                                context.SaveChanges();
+                                MessageBox.Show("Отдел удалён");
+                                (this.Parent as Panel).Children.Remove(this);
+                            }
+                        }
                     }
                 }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Возникла ошибка.\n" + ex.Message);
             }
         }
 

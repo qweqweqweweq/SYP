@@ -42,10 +42,13 @@ namespace SYP.Pages.Vacations
                 settings.Visibility = Visibility.Hidden;
                 export.Visibility = Visibility.Visible;
                 import.Visibility = Visibility.Visible;
+                search.Visibility = Visibility.Visible;
+                Department.Visibility = Visibility.Visible;
             }
             else
             {
                 request.Visibility = Visibility.Visible;
+                sPanel.HorizontalAlignment = HorizontalAlignment.Left;
             }
 
             foreach (var item in typeContext.VacationTypes) Type.Items.Add(item.Name);
@@ -161,15 +164,30 @@ namespace SYP.Pages.Vacations
                 return;
             }
 
+            var currentUser = MainWindow.mw.CurrentUser;
+            if (currentUser == null) return;
+
             string selectedTypeName = Type.SelectedItem.ToString();
             var selectedType = typeContext.VacationTypes.FirstOrDefault(t => t.Name == selectedTypeName);
 
             if (selectedType != null)
             {
-                var matchedVacations = VacationContext.Vacations.Where(v => v.TypeId == selectedType.Id).ToList();
+                List<Models.Vacations> matchedVacations;
+
+                if (currentUser.Role == "Admin")
+                {
+                    matchedVacations = VacationContext.Vacations
+                        .Where(v => v.TypeId == selectedType.Id)
+                        .ToList();
+                }
+                else
+                {
+                    matchedVacations = VacationContext.Vacations
+                        .Where(v => v.TypeId == selectedType.Id && v.EmployeeId == currentUser.EmployeeId)
+                        .ToList();
+                }
 
                 showVacations.Children.Clear();
-
                 foreach (var item in matchedVacations)
                 {
                     showVacations.Children.Add(new VacationItem(this, item));
@@ -202,8 +220,10 @@ namespace SYP.Pages.Vacations
                 MessageBox.Show("Вы можете подать заявление на отпуск только через 6 месяцев после трудоустройства.", "Отказ", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
-
-            MainWindow.mw.OpenPages(new VacationRequest());
+            else
+            {
+                MainWindow.mw.OpenPages(new VacationRequest(this, null));
+            }
         }
 
         private bool CanRequestVacation(Models.Employees employee)
